@@ -7,20 +7,17 @@ var gems = [0, 1, 2, 3, 4];
 var myGen = new levelGenerator(gems, 8, 8);
 myGen.generateLevel();
 var playingField = myGen.getLevel();
-//anigilate();
 check();
 
 function turn(fromX, fromY, toX, toY){
 	let buff = playingField[fromX][fromY];
-	playingField[fromX][fromY] = playingField[toY][toY];
-	playingField[toY][toY] = playingField[buff[0]][buff[1]];
-	check();
+	playingField[fromX][fromY] = playingField[toX][toY];
+	playingField[toY][toY] = buff;
 }
 
 function check(){
 	while (true){
 		if (!anigilate()){return;}
-		console.log(playingField);
 	}
 }
 
@@ -74,7 +71,7 @@ function anigilate(){
 }
 
 function doGen(){
-	let myChanger = new levelChanger(playingField, [0, 1, 2, 3, 4]);
+	let myChanger = new levelChanger(playingField, gems);
 	myChanger.replaceWithGenerated(-1);
 	playingField = myChanger.getLevel();
 }
