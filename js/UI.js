@@ -9,19 +9,15 @@ $(document).ready(function() {
     var Game = function () { 
         //create game grid
         this.gameGrid = $('#game-grid');
+        var level = GetPlayingField();
 
         for (let i = 0; i < GAME_GRID_HEIGHT; ++i) {
             for (let j = 0; j < GAME_GRID_WIDTH; ++j) {
                 var id = i + '-' + j;
-                if (j === 3) {
-                    this.gameGrid.append('<div id="' + id +'" class="game-cell"><img src="img/diamond-blue.png"></div>');
-                }
-                else {
-                    this.gameGrid.append('<div id="' + id +'" class="game-cell"><img src="img/diamond-red.png"></div>');
-                }
-                // $('#' + id).css('background-color', getRandomColor());
+                this.gameGrid.append('<div id="' + id +'" class="game-cell"><img src="img/diamond-' + level[i][j] + '.png"></div>');
+
                 $('#' + id).click({game: this}, function() {
-                    e.data.game.userClick($(this));
+                    game.userClick($(this));
                 });
             }
         }
