@@ -35,7 +35,7 @@ $(document).ready(function() {
             }
         }
 
-        if(anigilate()) {
+        if(canAnigilate()) {
             this.isAnimationInProgress = true;
             console.log('animation blocked');
             setTimeout(function(game) {game.updateLevel()}, 1000, this);
