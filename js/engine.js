@@ -12,7 +12,7 @@ check();
 function turn(fromX, fromY, toX, toY){
 	let buff = playingField[fromX][fromY];
 	playingField[fromX][fromY] = playingField[toX][toY];
-	playingField[toY][toY] = buff;
+	playingField[toX][toY] = buff;
 }
 
 function check(){
