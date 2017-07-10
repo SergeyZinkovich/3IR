@@ -7,10 +7,12 @@ var gems = [0, 1, 2, 3, 4];
 var myGen = new levelGenerator(gems, 8, 8);
 myGen.generateLevel();
 var playingField = myGen.getLevel();
-//check();
+check();
 
 function turn(fromX, fromY, toX, toY){
-	swap(playingField[fromX][fromY], playingField[toX][toY]);
+	let buff = playingField[fromX][fromY];
+	playingField[fromX][fromY] = playingField[toX][toY];		
+	playingField[toX][toY] = buff;
 }
 
 function check(){
@@ -36,7 +38,7 @@ function anigilate(){
 						playingField[i][h] = -1;
 						ans.push([i, h]);
 					}
-					gemFall(ans);
+					//gemFall(ans);
 					doGen();
 					return ans;
 				}
@@ -57,7 +59,7 @@ function anigilate(){
 						playingField[h][i] = -1;
 						ans.push([h, i]);
 					}
-					gemFall(ans);
+					//gemFall(ans);
 					doGen();
 					return ans;
 				}
@@ -104,21 +106,18 @@ function canAnigilate(){
 }
 
 function gemFall(line){
-	for (let i = line[0][0]; i <= line[-1][0]; i++){
-		for (let j = line[0][1]; j <= line[-1][1]; j++){
+	let buff;
+	for (let i = line[0][0]; i <= line[line.length - 1][0]; i++){
+		for (let j = line[0][1]; j <= line[line.length - 1][1]; j++){
 		let h = j;
 			while ((h > 0) && (playingField[i][h - 1] !== -1)){
-				swap(playingField[i][h - 1], playingField[i][h]);
+				buff = playingField[i][h - 1];
+				playingField[i][h - 1] = playingField[i][h];
+				playingField[i][h] = buff;
+				h--;
 			}
 		}
 	}
-}
-
-function swap(a, b){
-	let c;
-	c = a;
-	a = b;
-	b = c;
 }
 
 function doGen(){
