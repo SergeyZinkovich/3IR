@@ -21,7 +21,6 @@ $(document).ready(function() {
     };
 
     Game.prototype.updateLevel = function(argument){
-        anigilate();
         this.gameGrid.empty();
         this.level = getPlayingField(); 
         for (let i = 0; i < GAME_GRID_HEIGHT; ++i) {
@@ -35,7 +34,7 @@ $(document).ready(function() {
             }
         }
 
-        if(canAnigilate()) {
+        if(anigilate()) {
             this.isAnimationInProgress = true;
             console.log('animation blocked');
             setTimeout(function(game) {game.updateLevel()}, 1000, this);
