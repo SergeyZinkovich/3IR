@@ -13,7 +13,7 @@ function turn(fromX, fromY, toX, toY){
 	let buff = playingField[fromX][fromY];
 	playingField[fromX][fromY] = playingField[toX][toY];		
 	playingField[toX][toY] = buff;
-	check();
+	anigilate();
 }
 
 function check(){
