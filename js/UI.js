@@ -1,4 +1,5 @@
 "use strict"
+var gGame;
 $(document).ready(function() {
     console.log('UI loaded')
 
@@ -9,16 +10,33 @@ $(document).ready(function() {
     var Game = function () { 
         //create game grid
         this.gameGrid = $('#game-grid');
-        var level = GetPlayingField();
+        // var level = getPlayingField();
 
         $("#game-grid").css({
             'width': CELL_SIZE * GAME_GRID_WIDTH + 'px',
             'height': CELL_SIZE * GAME_GRID_HEIGHT + 'px'
         });
+        this.updateLevel();
+        // for (let i = 0; i < GAME_GRID_HEIGHT; ++i) {
+        //     for (let j = 0; j < GAME_GRID_WIDTH; ++j) {
+        //         var id = i + '-' + j;
+        //         this.gameGrid.append('<div id="' + id +'" class="game-cell"><img src="img/diamond-' + level[i][j] + '.png"></div>');
+
+        //         $('#' + id).click({game: this}, function() {
+        //             game.userClick($(this));
+        //         });
+        //     }
+        // }
+    };
+
+    Game.prototype.updateLevel = function(argument){
+        anigilate();
+        this.gameGrid.empty();
+        this.level = getPlayingField(); 
         for (let i = 0; i < GAME_GRID_HEIGHT; ++i) {
             for (let j = 0; j < GAME_GRID_WIDTH; ++j) {
                 var id = i + '-' + j;
-                this.gameGrid.append('<div id="' + id +'" class="game-cell"><img src="img/diamond-' + level[i][j] + '.png"></div>');
+                this.gameGrid.append('<div id="' + id +'" class="game-cell"><img src="img/diamond-' + this.level[i][j] + '.png"></div>');
 
                 $('#' + id).click({game: this}, function() {
                     game.userClick($(this));
@@ -33,6 +51,7 @@ $(document).ready(function() {
         if (selectedCells.length === 2) {
             this.swapCells(selectedCells.eq(0), selectedCells.eq(1));
             this.gameGrid.children().removeClass('selected-cell');
+            this.updateLevel();
         }
     };
 
@@ -40,6 +59,7 @@ $(document).ready(function() {
         var id1 = cell1.attr('id').split('-');
         var id2 = cell2.attr('id').split('-');
 
+        turn(id1[0], id1[1], id2[0], id2[1]);
 
         var cell1Img = cell1.find('img');
         var cell2Img = cell2.find('img');
@@ -64,5 +84,33 @@ $(document).ready(function() {
         });
     };
 
+    // Game.prototype.destroyBlocks = function(blocks) {
+    //     var that = this;
+    //     blocks.forEach(function(block, index, array) {
+    //         that.gameGrid.find('#'+block[0]+'-'+block[1] +' img').addClass('destroy');
+
+    //         for (let j = this.gameGrid[0].length - 1) {
+    //             let destCount = 0;
+    //             for (let i = this.gameGrid.length - 1; i >= 0; --i) {
+    //                 let cell = $('#'+i+'-'+j);//TODO: make funtion
+    //                 if (cell.hasClass('destroy')) {
+    //                     destCount++;
+    //                 }
+    //                 else if (destCount > 0) {
+    //                     that.dropCell(cell, destCount);
+    //                 }
+    //             }
+    //         }
+    //     });
+
+
+    // };
+
+    // Game.prototype.dropCell = function(cell, height) {  
+    //     var id = cell.attr('id').split('-');
+    //     var cellImg = cell1.find('img');
+
+    // };
     var game = new Game();
+    gGame = game;
 });
