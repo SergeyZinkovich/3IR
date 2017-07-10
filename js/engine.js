@@ -3,9 +3,10 @@ console.log('engine loaded');
 
 var GameStatus = 0;
 var Score = 0;
-var myGen = new levelGenerator([1, 2], 8, 8);
+var myGen = new levelGenerator([0, 1, 2, 3, 4], 8, 8);
 myGen.generateLevel();
 var PlayingField = myGen.getLevel();
+//Anigilate();
 Check();
 
 function Turn(FromX, FromY, ToX, ToY){
@@ -18,7 +19,7 @@ function Turn(FromX, FromY, ToX, ToY){
 function Check(){
 	while (true){
 		if (!Anigilate()){return;}
-		DoGen();
+		console.log(PlayingField);
 	}
 }
 
@@ -34,11 +35,13 @@ function Anigilate(){
 			if ((PlayingField[i][j] != PlayingField[i][beg]) || (j === PlayingField[0].length - 1)){
 				if (PlayingField[i][j] === PlayingField[i][beg]){j++;}
 				if (j - beg > 2){
+					let ans = [];
 					for (let h = beg; h < j; h++){
-						PlayingField[i][h] = 0;
+						PlayingField[i][h] = -1;
+						ans.push([i, h]);
 					}
 					DoGen();
-					return [[i, beg], [i, j - 1]];
+					return ans;
 				}
 				else{
 					beg = j;
@@ -52,11 +55,13 @@ function Anigilate(){
 			if ((PlayingField[j][i] != PlayingField[beg][i]) || (j === PlayingField.length - 1)){
 				if (PlayingField[j][i] === PlayingField[beg][i]){j++;}
 				if (j - beg > 2){
+					let ans = [];
 					for (let h = beg; h < j; h++){
-						PlayingField[h][i] = 0;
+						PlayingField[h][i] = -1;
+						ans.push([h, i]);
 					}
 					DoGen();
-					return [[beg, i], [j - 1, i]];
+					return ans;
 				}
 				else{
 					beg = j;
@@ -68,7 +73,7 @@ function Anigilate(){
 }
 
 function DoGen(){
-	let myChanger = new levelChanger(PlayingField, [1, 2]);
-	myChanger.replaceWithGenerated(0);
+	let myChanger = new levelChanger(PlayingField, [0, 1, 2, 3, 4]);
+	myChanger.replaceWithGenerated(-1);
 	PlayingField = myChanger.getLevel();
 }
