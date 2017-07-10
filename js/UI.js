@@ -28,8 +28,8 @@ $(document).ready(function() {
                 var id = i + '-' + j;
                 this.gameGrid.append('<div id="' + id +'" class="game-cell"><img src="img/diamond-' + this.level[i][j] + '.png"></div>');
 
-                $('#' + id).click({game: this}, function() {
-                    game.userClick($(this));
+                $('#' + id).click({game: this}, function(e) {
+                    e.data.game.userClick($(this));
                 });
             }
         }
