@@ -6,16 +6,13 @@
 #game-grid {
     display: block;
     margin: 0 auto;
-    width: 800px;
-    height: 800px;
 }
-
 .game-cell {
     display: block;
     position:  relative;
     float: left;
-    width: 100px;
-    height: 100px;
+    width: 64px;
+    height: 64px;
     /* background-color: #707070; */
 }
 

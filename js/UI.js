@@ -4,13 +4,17 @@ $(document).ready(function() {
 
     const GAME_GRID_WIDTH = 8;
     const GAME_GRID_HEIGHT = 8;
-    const CELL_SIZE = 100;
+    const CELL_SIZE = 64;
 
     var Game = function () { 
         //create game grid
         this.gameGrid = $('#game-grid');
         var level = GetPlayingField();
 
+        $("#game-grid").css({
+            'width': CELL_SIZE * GAME_GRID_WIDTH + 'px',
+            'height': CELL_SIZE * GAME_GRID_HEIGHT + 'px'
+        });
         for (let i = 0; i < GAME_GRID_HEIGHT; ++i) {
             for (let j = 0; j < GAME_GRID_WIDTH; ++j) {
                 var id = i + '-' + j;
