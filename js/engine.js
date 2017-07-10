@@ -13,6 +13,7 @@ function turn(fromX, fromY, toX, toY){
 	let buff = playingField[fromX][fromY];
 	playingField[fromX][fromY] = playingField[toX][toY];		
 	playingField[toX][toY] = buff;
+	check();
 }
 
 function check(){
@@ -38,7 +39,7 @@ function anigilate(){
 						playingField[i][h] = -1;
 						ans.push([i, h]);
 					}
-					//gemFall(ans);
+					gemFall(ans);
 					doGen();
 					return ans;
 				}
@@ -59,7 +60,7 @@ function anigilate(){
 						playingField[h][i] = -1;
 						ans.push([h, i]);
 					}
-					//gemFall(ans);
+					gemFall(ans);
 					doGen();
 					return ans;
 				}
@@ -107,17 +108,20 @@ function canAnigilate(){
 
 function gemFall(line){
 	let buff;
-	for (let i = line[0][0]; i <= line[line.length - 1][0]; i++){
-		for (let j = line[0][1]; j <= line[line.length - 1][1]; j++){
-		let h = j;
-			while ((h > 0) && (playingField[i][h - 1] !== -1)){
-				buff = playingField[i][h - 1];
-				playingField[i][h - 1] = playingField[i][h];
-				playingField[i][h] = buff;
+	console.log(playingField);
+	console.log("LINE", line);
+	for (let i = line[0][1]; i <= line[line.length - 1][1]; i++){
+		for (let j = line[0][0]; j <= line[line.length - 1][0]; j++){
+			let h = j;
+			while ((h > 0) && (playingField[h - 1][i] !== -1)){
+				buff = playingField[h - 1][i];
+				playingField[h - 1][i] = playingField[h][i];
+				playingField[h][i] = buff;
 				h--;
 			}
 		}
 	}
+	console.log(playingField);
 }
 
 function doGen(){
