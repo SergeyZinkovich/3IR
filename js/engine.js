@@ -1,46 +1,47 @@
 "use strict"
 console.log('engine loaded');
 
-var GameStatus = 0;
-var Score = 0;
-var myGen = new levelGenerator([0, 1, 2, 3, 4], 8, 8);
+var gameStatus = 0;
+var score = 0;
+var gems = [0, 1, 2, 3, 4];
+var myGen = new levelGenerator(gems, 8, 8);
 myGen.generateLevel();
-var PlayingField = myGen.getLevel();
-//Anigilate();
-Check();
+var playingField = myGen.getLevel();
+//anigilate();
+check();
 
-function Turn(FromX, FromY, ToX, ToY){
-	let buff = PlayingField[FromX][FromY];
-	PlayingField[FromX][FromY] = PlayingField[ToY][ToY];
-	PlayingField[ToY][ToY] = PlayingField[buff[0]][buff[1]];
-	Check();
+function turn(fromX, fromY, toX, toY){
+	let buff = playingField[fromX][fromY];
+	playingField[fromX][fromY] = playingField[toY][toY];
+	playingField[toY][toY] = playingField[buff[0]][buff[1]];
+	check();
 }
 
-function Check(){
+function check(){
 	while (true){
-		if (!Anigilate()){return;}
-		console.log(PlayingField);
+		if (!anigilate()){return;}
+		console.log(playingField);
 	}
 }
 
-function GetPlayingField(){
-	return PlayingField;
+function getPlayingField(){
+	return playingField;
 }
 
-function Anigilate(){
+function anigilate(){
 	let beg;
-	for (let i = 0; i < PlayingField.length; i++){
+	for (let i = 0; i < playingField.length; i++){
 		beg = 0;
-		for (let j = 0; j < PlayingField[0].length; j++){
-			if ((PlayingField[i][j] != PlayingField[i][beg]) || (j === PlayingField[0].length - 1)){
-				if (PlayingField[i][j] === PlayingField[i][beg]){j++;}
+		for (let j = 0; j < playingField[0].length; j++){
+			if ((playingField[i][j] != playingField[i][beg]) || (j === playingField[0].length - 1)){
+				if (playingField[i][j] === playingField[i][beg]){j++;}
 				if (j - beg > 2){
 					let ans = [];
 					for (let h = beg; h < j; h++){
-						PlayingField[i][h] = -1;
+						playingField[i][h] = -1;
 						ans.push([i, h]);
 					}
-					DoGen();
+					doGen();
 					return ans;
 				}
 				else{
@@ -49,18 +50,18 @@ function Anigilate(){
 			}
 		}
 	}
-	for (let i = 0; i < PlayingField[0].length; i++){
+	for (let i = 0; i < playingField[0].length; i++){
 		beg = 0;
-		for (let j = 0; j < PlayingField.length; j++){
-			if ((PlayingField[j][i] != PlayingField[beg][i]) || (j === PlayingField.length - 1)){
-				if (PlayingField[j][i] === PlayingField[beg][i]){j++;}
+		for (let j = 0; j < playingField.length; j++){
+			if ((playingField[j][i] != playingField[beg][i]) || (j === playingField.length - 1)){
+				if (playingField[j][i] === playingField[beg][i]){j++;}
 				if (j - beg > 2){
 					let ans = [];
 					for (let h = beg; h < j; h++){
-						PlayingField[h][i] = -1;
+						playingField[h][i] = -1;
 						ans.push([h, i]);
 					}
-					DoGen();
+					doGen();
 					return ans;
 				}
 				else{
@@ -72,8 +73,8 @@ function Anigilate(){
 	return false;
 }
 
-function DoGen(){
-	let myChanger = new levelChanger(PlayingField, [0, 1, 2, 3, 4]);
+function doGen(){
+	let myChanger = new levelChanger(playingField, [0, 1, 2, 3, 4]);
 	myChanger.replaceWithGenerated(-1);
-	PlayingField = myChanger.getLevel();
+	playingField = myChanger.getLevel();
 }
