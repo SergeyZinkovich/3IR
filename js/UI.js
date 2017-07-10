@@ -9,6 +9,7 @@ $(document).ready(function() {
 
     var Game = function () { 
         //create game grid
+        this.isAnimationInProgress = false;
         this.gameGrid = $('#game-grid');
         // var level = getPlayingField();
 
@@ -17,16 +18,6 @@ $(document).ready(function() {
             'height': CELL_SIZE * GAME_GRID_HEIGHT + 'px'
         });
         this.updateLevel();
-        // for (let i = 0; i < GAME_GRID_HEIGHT; ++i) {
-        //     for (let j = 0; j < GAME_GRID_WIDTH; ++j) {
-        //         var id = i + '-' + j;
-        //         this.gameGrid.append('<div id="' + id +'" class="game-cell"><img src="img/diamond-' + level[i][j] + '.png"></div>');
-
-        //         $('#' + id).click({game: this}, function() {
-        //             game.userClick($(this));
-        //         });
-        //     }
-        // }
     };
 
     Game.prototype.updateLevel = function(argument){
@@ -43,23 +34,39 @@ $(document).ready(function() {
                 });
             }
         }
+
+        if(anigilate()) {
+            this.isAnimationInProgress = true;
+            console.log('animation blocked');
+            setTimeout(function(game) {game.updateLevel()}, 1000, this);
+        }
+        else {
+            this.isAnimationInProgress = false;
+            console.log('animation unblocked');
+        }
     };
 
     Game.prototype.userClick = function(cell){
+        if (this.isAnimationInProgress) {
+            console.log('user click was blocked');
+            return;
+        }
+
         cell.addClass('selected-cell');
         var selectedCells = this.gameGrid.children(".selected-cell");
         if (selectedCells.length === 2) {
+
             this.swapCells(selectedCells.eq(0), selectedCells.eq(1));
             this.gameGrid.children().removeClass('selected-cell');
-            this.updateLevel();
         }
     };
 
     Game.prototype.swapCells = function(cell1, cell2) {
+        var that = this;
         var id1 = cell1.attr('id').split('-');
         var id2 = cell2.attr('id').split('-');
 
-        turn(id1[0], id1[1], id2[0], id2[1]);
+        turn(id1[0], id1[1], id2[0], id2[1]);//todo перенести?
 
         var cell1Img = cell1.find('img');
         var cell2Img = cell2.find('img');
@@ -81,7 +88,9 @@ $(document).ready(function() {
             400, function() {
                 cell2Img.css({'top': 0, 'left': 0});
                 cell2Img.attr('src', cell1ImgPath);
+                that.updateLevel();
         });
+        
     };
 
     // Game.prototype.destroyBlocks = function(blocks) {
@@ -112,5 +121,5 @@ $(document).ready(function() {
 
     // };
     var game = new Game();
-    gGame = game;
+    gGame = game;//debug
 });
