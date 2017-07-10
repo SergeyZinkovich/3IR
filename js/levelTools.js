@@ -4,8 +4,8 @@
 "use strict"
 
 function randomInteger(min, max) {
-    var rand = min + Math.random() * (max + 1 - min);
-    rand = Math.floor(rand);
+    var rand = min - 0.5 + Math.random() * (max - min + 1)
+    rand = Math.round(rand);
     return rand;
 }
 
