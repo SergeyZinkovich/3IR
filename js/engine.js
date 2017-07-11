@@ -30,7 +30,7 @@ var Engine = function (){
 		for (let i = 0; i < playingField.length; i++){
 			beg = 0;
 			for (let j = 0; j < playingField[0].length; j++){
-				if ((playingField[i][j] != playingField[i][beg]) || (j === playingField[0].length - 1)){
+				if ((playingField[i][j] !== playingField[i][beg]) || (j === playingField[0].length - 1)){
 					if (playingField[i][j] === playingField[i][beg]){j++;}
 					if (j - beg > 2){
 						for (let h = beg; h < j; h++){
@@ -44,7 +44,7 @@ var Engine = function (){
 		for (let i = 0; i < playingField[0].length; i++){
 			beg = 0;
 			for (let j = 0; j < playingField.length; j++){
-				if ((playingField[j][i] != playingField[beg][i]) || (j === playingField.length - 1) || (playingField[j][i] === -1)){
+				if ((playingField[j][i] !== playingField[beg][i]) || (j === playingField.length - 1) || (playingField[j][i] === -1)){
 					if (playingField[j][i] === playingField[beg][i]){j++;}
 					if (j - beg > 2){
 						for (let h = beg; h < j; h++){
@@ -55,11 +55,12 @@ var Engine = function (){
 				}
 			}
 		}
-		for (var i = 0; i < ans.length; i++){
+		for (let i = 0; i < ans.length; i++){
 			playingField[ans[i][0]][ans[i][1]] = -1;
 		}
 		if (ans.length > 0){
-			score += 30 * ans.length;
+			updateScore(ans);
+			updateColletedGems(ans);
 			gemFall(ans);
 			doGen();
 			return ans;
@@ -68,13 +69,19 @@ var Engine = function (){
 			return false;
 		}
 	}
+	
+	function updateScore(arr){
+		for (let i = 0; i < arr.length; i++){
+			score += 30 * Math.floor(arr[i][2] / gems.length);
+		}
+	}
 
 	this.canAnigilate = function(){
 		let beg;
 		for (let i = 0; i < playingField.length; i++){
 			beg = 0;
 			for (let j = 0; j < playingField[0].length; j++){
-				if ((playingField[i][j] != playingField[i][beg]) || (j === playingField[0].length - 1)){
+				if ((playingField[i][j] !== playingField[i][beg]) || (j === playingField[0].length - 1)){
 					if (playingField[i][j] === playingField[i][beg]){j++;}
 					if (j - beg > 2){
 						return true;
@@ -88,7 +95,7 @@ var Engine = function (){
 		for (let i = 0; i < playingField[0].length; i++){
 			beg = 0;
 			for (let j = 0; j < playingField.length; j++){
-				if ((playingField[j][i] != playingField[beg][i]) || (j === playingField.length - 1)){
+				if ((playingField[j][i] !== playingField[beg][i]) || (j === playingField.length - 1)){
 					if (playingField[j][i] === playingField[beg][i]){j++;}
 					if (j - beg > 2){
 						return true;
@@ -122,9 +129,45 @@ var Engine = function (){
 		playingField = myChanger.getLevel();
 	}
 	
+	function replaceUpgradedGem(gem){
+		for (let i = 0; i < playingField.length; i++){
+			for (let j = 0; j < playingField[0].length; j++){
+				if (playingField[i][j] === gem){
+					playingField[i][j] += gems.length;
+				}
+			}
+		}
+	}
+	
+	function updateColletedGems(arr){
+		for (let i = 0; i < arr.length; i++){
+			gemsCount[arr[i][2]]++;
+		}
+		upgradeGems();
+	}
+	
+	function upgradeGems(){
+		for (let i = 0; i < gemsCount.length; i++){
+			if ((gemsCount[i] > 15) && (Math.floor(gems[i] / gems.length) < 1)){
+				replaceUpgradedGem(gems[i]);
+				gems[i] += gems.length;
+				gemsCount[i] = 0;
+			}
+		}
+	}
+	
+	this.getGemsStatus(){
+		let ans = [];
+		for (let i = 0; i < gems.length; i++){
+			ans.push([gems[i], gemsCount[i]]);
+		}
+		return ans;
+	}
+	
 	var gameStatus = 0;
 	var score = 0;
 	var gems = [0, 1, 2, 3, 4];
+	var gemsCount = [0, 0, 0, 0, 0]; 
 	var myGen = new levelGenerator(gems, 8, 8);
 	myGen.generateLevel();
 	var playingField = myGen.getLevel();
