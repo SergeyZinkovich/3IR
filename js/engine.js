@@ -32,10 +32,11 @@ var Engine = function (){
 			for (let j = 0; j < playingField[0].length; j++){
 				if ((playingField[i][j] != playingField[i][beg]) || (j === playingField[0].length - 1)){
 					if (playingField[i][j] === playingField[i][beg]){j++;}
+					if (playingField[i][beg] === -1){continue;}
 					if (j - beg > 2){
 						for (let h = beg; h < j; h++){
+							ans.push([i, h, playingField[i][h]]);
 							playingField[i][h] = -1;
-							ans.push([i, h]);
 						}
 					}
 					else{
@@ -47,12 +48,13 @@ var Engine = function (){
 		for (let i = 0; i < playingField[0].length; i++){
 			beg = 0;
 			for (let j = 0; j < playingField.length; j++){
-				if ((playingField[j][i] != playingField[beg][i]) || (j === playingField.length - 1)){
+				if ((playingField[j][i] != playingField[beg][i]) || (j === playingField.length - 1) || (playingField[j][i] === -1)){
 					if (playingField[j][i] === playingField[beg][i]){j++;}
+					if (playingField[beg][i] === -1){continue;}
 					if (j - beg > 2){
 						for (let h = beg; h < j; h++){
+							ans.push([h, i, playingField[h][i]]);
 							playingField[h][i] = -1;
-							ans.push([h, i]);
 						}
 					}
 					else{
@@ -62,7 +64,9 @@ var Engine = function (){
 			}
 		}
 		if (ans.length > 0){
-			score += 30 *ans.length;
+			console.log("test", ans.length);
+			console.log(ans);
+			score += 30 * ans.length;
 			gemFall(ans);
 			doGen();
 			return ans;
