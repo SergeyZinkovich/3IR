@@ -11,18 +11,18 @@ $(document).ready(function() {
         //create game grid
         this.isAnimationInProgress = false;
         this.gameGrid = $('#game-grid');
-        // var level = getPlayingField();
-
+		this.level = engine.getPlayingField();
         $("#game-grid").css({
             'width': CELL_SIZE * GAME_GRID_WIDTH + 'px',
             'height': CELL_SIZE * GAME_GRID_HEIGHT + 'px'
         });
-        this.updateLevel();
+        this.updateLevel(false);
+		this.redrawGrid();
     };
-
-    Game.prototype.updateLevel = function(argument){
-        this.gameGrid.empty();
-        this.level = getPlayingField(); 
+	
+	Game.prototype.redrawGrid = function(){
+		this.gameGrid.empty();
+		this.level = engine.getPlayingField();
         for (let i = 0; i < GAME_GRID_HEIGHT; ++i) {
             for (let j = 0; j < GAME_GRID_WIDTH; ++j) {
                 var id = i + '-' + j;
@@ -33,11 +33,17 @@ $(document).ready(function() {
                 });
             }
         }
+	}
 
-        if(anigilate()) {
+    Game.prototype.updateLevel = function(destroyed){
+		this.destroyGems.call(this, destroyed);
+        // this.gameGrid.empty();
+        // this.level = getPlayingField(); 
+		var destroyNext = engine.anigilate();
+        if(destroyNext) {
             this.isAnimationInProgress = true;
             console.log('animation blocked');
-            setTimeout(function(game) {game.updateLevel()}, 1000, this);
+            setTimeout(function(game, destroyNext) {game.updateLevel(destroyNext)}, 5000, this, destroyNext);
         }
         else {
             this.isAnimationInProgress = false;
@@ -65,7 +71,7 @@ $(document).ready(function() {
         var id1 = cell1.attr('id').split('-');
         var id2 = cell2.attr('id').split('-');
 
-        turn(id1[0], id1[1], id2[0], id2[1]);//todo перенести?
+        var destroyed = engine.turn(id1[0], id1[1], id2[0], id2[1]);//todo перенести?
 
         var cell1Img = cell1.find('img');
         var cell2Img = cell2.find('img');
@@ -87,38 +93,52 @@ $(document).ready(function() {
             400, function() {
                 cell2Img.css({'top': 0, 'left': 0});
                 cell2Img.attr('src', cell1ImgPath);
-                that.updateLevel();
+				that.updateLevel(destroyed);
         });
-        
     };
 
-    // Game.prototype.destroyBlocks = function(blocks) {
-    //     var that = this;
-    //     blocks.forEach(function(block, index, array) {
-    //         that.gameGrid.find('#'+block[0]+'-'+block[1] +' img').addClass('destroy');
+    Game.prototype.destroyGems = function(gems) {
+		console.log('destroying');
+		if(!gems)
+			return;
+		
+        var that = this;
+        gems.forEach(function(gem, index, array) {
+            that.gameGrid.find('#'+gem[0]+'-'+gem[1] +' img').addClass('destroy');
+		});
+		
+		for (let j = 0; j < that.level[0].length; ++j) {
+			let destCount = 0;
+			for (let i = that.level.length - 1; i >= 0; --i) {
+				let gemImg = $('#'+i+'-'+j + ' img');//TODO: make function
+				if (gemImg.hasClass('destroy')) {
+					destCount++;
+				}
+				else if (destCount > 0) {
+					that.dropCell(gemImg, destCount);
+					// setTimeout(function() {that.dropCell(gemImg, destCount)}, 1000);
+					// function() {
+						// var tmp = gemImg;
+						// var tmp1
+						// setTimeout(function() {that.dropCell(tmp, tmp1)}, 1000);
+					// }();
+				}
+			}
+		}
+      
+		
+		setTimeout(function(game) {game.redrawGrid.call(game);}, 4000, this);
 
-    //         for (let j = this.gameGrid[0].length - 1) {
-    //             let destCount = 0;
-    //             for (let i = this.gameGrid.length - 1; i >= 0; --i) {
-    //                 let cell = $('#'+i+'-'+j);//TODO: make funtion
-    //                 if (cell.hasClass('destroy')) {
-    //                     destCount++;
-    //                 }
-    //                 else if (destCount > 0) {
-    //                     that.dropCell(cell, destCount);
-    //                 }
-    //             }
-    //         }
-    //     });
+    };
 
-
-    // };
-
-    // Game.prototype.dropCell = function(cell, height) {  
-    //     var id = cell.attr('id').split('-');
-    //     var cellImg = cell1.find('img');
-
-    // };
+    Game.prototype.dropCell = function(gemImg, height) {  
+		console.log('cell drops--------------------------');
+        gemImg.animate({
+		'top': CELL_SIZE * height + 'px'},
+        1000, function() {
+			console.log('drop callback');
+        });
+    };
     var game = new Game();
     gGame = game;//debug
 });
