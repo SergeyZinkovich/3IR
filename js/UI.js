@@ -7,7 +7,7 @@ $(document).ready(function(){
     const GAME_GRID_HEIGHT = 8;
     const CELL_SIZE = 64;
 
-    const FALL_TIME = 1000;
+    const FALL_TIME = 500;
     const SWAP_TIME = 400;
 
     var Game = function () { 
@@ -49,7 +49,7 @@ $(document).ready(function(){
             for (let j = 0; j < GAME_GRID_WIDTH; ++j) {
                 var id = i + '-' + j;
                 var gem = this.gameGrid.find('#'+id+' img').attr('src', 'img/diamond-' + this.level[i][j] + '.png');
-                gem.removeClass('destroy');
+                gem.removeClass('destroyed');
             }
         }
 
