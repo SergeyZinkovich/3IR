@@ -156,7 +156,7 @@ var Engine = function (){
 		}
 	}
 	
-	this.getGemsStatus(){
+	this.getGemsStatus = function(){
 		let ans = [];
 		for (let i = 0; i < gems.length; i++){
 			ans.push([gems[i], gemsCount[i]]);
