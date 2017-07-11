@@ -32,16 +32,12 @@ var Engine = function (){
 			for (let j = 0; j < playingField[0].length; j++){
 				if ((playingField[i][j] != playingField[i][beg]) || (j === playingField[0].length - 1)){
 					if (playingField[i][j] === playingField[i][beg]){j++;}
-					if (playingField[i][beg] === -1){continue;}
 					if (j - beg > 2){
 						for (let h = beg; h < j; h++){
 							ans.push([i, h, playingField[i][h]]);
-							playingField[i][h] = -1;
 						}
 					}
-					else{
-						beg = j;
-					}
+					beg = j;
 				}
 			}
 		}
@@ -50,22 +46,19 @@ var Engine = function (){
 			for (let j = 0; j < playingField.length; j++){
 				if ((playingField[j][i] != playingField[beg][i]) || (j === playingField.length - 1) || (playingField[j][i] === -1)){
 					if (playingField[j][i] === playingField[beg][i]){j++;}
-					if (playingField[beg][i] === -1){continue;}
 					if (j - beg > 2){
 						for (let h = beg; h < j; h++){
 							ans.push([h, i, playingField[h][i]]);
-							playingField[h][i] = -1;
 						}
 					}
-					else{
-						beg = j;
-					}
+					beg = j;
 				}
 			}
 		}
+		for (var i = 0; i < ans.length; i++){
+			playingField[ans[i][0]][ans[i][1]] = -1;
+		}
 		if (ans.length > 0){
-			console.log("test", ans.length);
-			console.log(ans);
 			score += 30 * ans.length;
 			gemFall(ans);
 			doGen();
@@ -111,15 +104,14 @@ var Engine = function (){
 
 	function gemFall(line){
 		let buff;
-		for (let i = line[0][1]; i <= line[line.length - 1][1]; i++){
-			for (let j = line[0][0]; j <= line[line.length - 1][0]; j++){
-				let h = j;
-				while ((h > 0) && (playingField[h - 1][i] !== -1)){
-					buff = playingField[h - 1][i];
-					playingField[h - 1][i] = playingField[h][i];
-					playingField[h][i] = buff;
-					h--;
-				}
+		for (let i = 0; i < line.length; i++){
+			let h = line[i][0];
+			let k = line[i][1];
+			while ((h > 0) && (playingField[h - 1][k] !== -1)){
+				buff = playingField[h - 1][k];
+				playingField[h - 1][k] = playingField[h][k];
+				playingField[h][k] = buff;
+				h--;
 			}
 		}
 	}
@@ -136,6 +128,7 @@ var Engine = function (){
 	var myGen = new levelGenerator(gems, 8, 8);
 	myGen.generateLevel();
 	var playingField = myGen.getLevel();
+	//var playingField = [[1,2,4,4,4,3], [4,0,3,4,1,2],[4,0,0,4,1,2],[0,2,2,3,0,0],[3,3,2,0,3,0],[4,4,3,4,1,4]];
 	check.apply(this);
 }
 
