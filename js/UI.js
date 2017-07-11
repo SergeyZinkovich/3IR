@@ -69,6 +69,11 @@ $(document).ready(function(){
     Game.prototype.updateLevel = function(destroyed){
 		console.log('updating level');
         $('#score-box').text(engine.getScore()+' Points');
+        var gemStatus = '';
+        engine.getGemsStatus().forEach(function(elem) {gemStatus += '<img src="img/diamond-'+elem[0]+'.png">:' + elem[1]});
+
+        $('#status-box').html(gemStatus);
+
 		if (!destroyed) {
             this.isAnimationInProgress = false;
             console.log('animation unblocked');
