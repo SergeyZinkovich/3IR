@@ -6,6 +6,11 @@ var Engine = function (){
     this.turn = function(fromX, fromY, toX, toY){
         gameLevel.swapElements(fromX, fromY, toX, toY);
         playingField = gameLevel.getMap();
+		if (!this.canAnigilate()){
+			gameLevel.swapElements(fromX, fromY, toX, toY);
+			playingField = gameLevel.getMap();
+			return false;
+		}
         return this.anigilate();
     }
 
@@ -70,8 +75,9 @@ var Engine = function (){
 	}
 	
 	function updateScore(arr){
+		if (gameStatus === 0){return;}
 		for (let i = 0; i < arr.length; i++){
-			score += 30 * Math.floor(arr[i][2] / gems.length + 1);
+			score += 5 * Math.floor(arr[i][2] / gems.length + 1);
 		}
 	}
 
@@ -138,6 +144,7 @@ var Engine = function (){
 	}
 	
 	function updateColletedGems(arr){
+		if (gameStatus === 0){return;}
 		for (let i = 0; i < arr.length; i++){
 			gemsCount[arr[i][2] % gems.length]++;
 		}
@@ -170,9 +177,7 @@ var Engine = function (){
 	gameLevel.generateLevel();
 	var playingField = gameLevel.getMap();
 	check.apply(this);
-	gems = [0, 1, 2, 3, 4];
-	gemsCount = [0, 0, 0, 0, 0]; 
-	score = 0;
+	gameStatus = 1;
 }
 
 var engine = new Engine();
