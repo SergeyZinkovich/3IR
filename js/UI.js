@@ -35,6 +35,17 @@ $(document).ready(function() {
                 });
             }
         }
+        var destroyNext = engine.anigilate();
+
+        if(destroyNext) {
+            this.isAnimationInProgress = true;
+            console.log('animation blocked');
+            setTimeout(function(game, destroyNext) {game.updateLevel(destroyNext)}, 500, this, destroyNext);
+        }
+        else {
+            this.isAnimationInProgress = false;
+            console.log('animation unblocked');
+        }
 	}
 
     Game.prototype.updateLevel = function(destroyed){
