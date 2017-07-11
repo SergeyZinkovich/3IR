@@ -77,12 +77,13 @@ $(document).ready(function() {
         var selectedCells = this.gameGrid.children(".selected-cell");
         if (selectedCells.length === 2) {
 
-            this.swapCells(selectedCells.eq(0), selectedCells.eq(1));
             this.gameGrid.children().removeClass('selected-cell');
+            this.swapCells(selectedCells.eq(0), selectedCells.eq(1));
         }
     };
 
     Game.prototype.swapCells = function(cell1, cell2) {
+        this.isAnimationInProgress = true;
         var that = this;
         var id1 = cell1.attr('id').split('-');
         var id2 = cell2.attr('id').split('-');
@@ -98,7 +99,7 @@ $(document).ready(function() {
         cell1Img.animate({
             'top': CELL_SIZE * (id2[0]-id1[0]) + 'px',
             'left': CELL_SIZE * (id2[1]-id1[1]) + 'px'},
-            400, function() {
+            1000, function() {
                 cell1Img.css({'top': 0, 'left': 0});
                 cell1Img.attr('src', cell2ImgPath);
         });
@@ -106,7 +107,7 @@ $(document).ready(function() {
         cell2Img.animate({
             'top': CELL_SIZE * (id1[0]-id2[0]) + 'px',
             'left': CELL_SIZE * (id1[1]-id2[1]) + 'px'},
-            400, function() {
+            1000, function() {
                 cell2Img.css({'top': 0, 'left': 0});
                 cell2Img.attr('src', cell1ImgPath);
 				that.updateLevel(destroyed);
@@ -143,7 +144,7 @@ $(document).ready(function() {
 		}
       
 		
-		setTimeout(function(game) {game.redrawGrid.call(game);}, 2000, this);
+		setTimeout(function(game) {game.redrawGrid.call(game);}, 4000, this);
 
     };
 
@@ -151,7 +152,7 @@ $(document).ready(function() {
 		console.log('cell drops--------------------------');
         gemImg.animate({
 		'top': CELL_SIZE * height + 'px'},
-        1000, function() {
+        2000, function() {
 			console.log('drop callback');
         });
     };

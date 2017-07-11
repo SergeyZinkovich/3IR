@@ -27,6 +27,7 @@
 }
 
 .selected-cell {
+    z-index: 0;
     background-color: blue;
 }
 
@@ -41,7 +42,10 @@
 }
 
 .destroy {
-    display: none;
+    /* display: none; */
+    background-color: red;
+    width: 32px;
+    height: 32px;
 }
 
 h1 {
