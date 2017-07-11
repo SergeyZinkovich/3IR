@@ -17,11 +17,11 @@ $(document).ready(function() {
             'height': CELL_SIZE * GAME_GRID_HEIGHT + 'px'
         });
         this.updateLevel(false);
-		this.redrawGrid();
+		this.drawGrid();
     };
-	
-	Game.prototype.redrawGrid = function(){
-		console.log('redraw');
+
+	Game.prototype.drawGrid = function(argument){
+		console.log('draw');
         this.level = engine.getPlayingField(); 
 		this.gameGrid.empty();
 		//this.level = engine.getPlayingField();
@@ -35,23 +35,53 @@ $(document).ready(function() {
                 });
             }
         }
-        var destroyNext = engine.anigilate();
 
-        if(destroyNext) {
-            this.isAnimationInProgress = true;
-            console.log('animation blocked');
-            setTimeout(function(game, destroyNext) {game.updateLevel(destroyNext)}, 500, this, destroyNext);
+        //var destroyNext = engine.anigilate();
+        
+    };
+
+    Game.prototype.redrawGrid = function(){
+        var that = this;
+        console.log('redraw');
+        for (let i = 0; i < GAME_GRID_HEIGHT; ++i) {
+            for (let j = 0; j < GAME_GRID_WIDTH; ++j) {
+                var id = i + '-' + j;
+                var gem = this.gameGrid.find('#'+id+' img').attr('src', 'img/diamond-' + this.level[i][j] + '.png');
+                gem.removeClass('destroy');
+                this.isAnimationInProgress = true;
+                console.log('anim lock');
+            }
         }
-        else {
-            this.isAnimationInProgress = false;
-            console.log('animation unblocked');
-        }
-	}
+
+        this.gameGrid.find('img').animate({
+            'top': 0,
+            'left': 0},
+            1000, function() {
+            that.isAnimationInProgress = false;
+        });
+
+        console.log('anim unlock');
+        setTimeout(function(destroyed) {that.updateLevel.call(that, destroyed)}, 1100, engine.anigilate());
+
+        // var destroyNext = engine.anigilate();
+        // if(destroyNext) {
+        //     this.isAnimationInProgress = true;
+        //     console.log('animation blocked');
+        //     setTimeout(function(game, destroyNext) {game.updateLevel(destroyNext)}, 500, this, destroyNext);
+        // }
+        // else {
+        //     this.isAnimationInProgress = false;
+        //     console.log('animation unblocked');
+        // }
+    }
 
     Game.prototype.updateLevel = function(destroyed){
 		console.log('update level');
-		if (!destroyed)
+		if (!destroyed) {
+            this.isAnimationInProgress = false;
+            console.log('animation unblocked');
 			return;
+        }
 		this.destroyGems.call(this, destroyed);
         // this.gameGrid.empty();
 		//var destroyNext = engine.anigilate();
@@ -126,35 +156,41 @@ $(document).ready(function() {
 		
 		for (let j = 0; j < that.level[0].length; ++j) {
 			let destCount = 0;
-			for (let i = that.level.length - 1; i >= 0; --i) {
+			for (var i = that.level.length - 1; i >= 0; --i) {
 				let gemImg = $('#'+i+'-'+j + ' img');//TODO: make function
 				if (gemImg.hasClass('destroy')) {
 					destCount++;
 				}
-				else if (destCount > 0) {
-					that.dropCell(gemImg, destCount);
-					// setTimeout(function() {that.dropCell(gemImg, destCount)}, 1000);
+				if(destCount > 0) {
+					that.riseCell($('#'+(i+destCount-1)+'-' + j + ' img'), destCount);
+					// setTimeout(function() {that.riseCell(gemImg, destCount)}, 1000);
 					// function() {
 						// var tmp = gemImg;
 						// var tmp1
-						// setTimeout(function() {that.dropCell(tmp, tmp1)}, 1000);
+						// setTimeout(function() {that.riseCell(tmp, tmp1)}, 1000);
 					// }();
 				}
-			}
+            }
+            for (let k = i+destCount-1; k >= 0; --k) {
+                that.riseCell($('#'+k+'-' + j + ' img'), destCount);
+            }
+
 		}
       
 		
-		setTimeout(function(game) {game.redrawGrid.call(game);}, 4000, this);
+		// setTimeout(function(game) {game.redrawGrid.call(game);}, 4000, this);
+        this.redrawGrid();
 
     };
 
-    Game.prototype.dropCell = function(gemImg, height) {  
+    Game.prototype.riseCell = function(gemImg, height) {  
 		console.log('cell drops--------------------------');
-        gemImg.animate({
-		'top': CELL_SIZE * height + 'px'},
-        2000, function() {
-			console.log('drop callback');
-        });
+        gemImg.css('top', -1 * CELL_SIZE * height + 'px');
+  //       gemImg.animate({
+		// 'top': CELL_SIZE * height + 'px'},
+  //       2000, function() {
+		// 	console.log('drop callback');
+  //       });
     };
     var game = new Game();
     gGame = game;//debug

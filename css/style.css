@@ -11,6 +11,7 @@
     margin: 0 auto;
 	border: 4px double blue;
 	background:  #ffcc99;
+    overflow: hidden;
 }
 
 .game-cell {
@@ -22,9 +23,9 @@
     /* background-color: #707070; */
 }
 
-.game-cell:hover {
+/* .game-cell:hover {
     background-color: #0000ff;
-}
+} */
 
 .selected-cell {
     z-index: 0;
