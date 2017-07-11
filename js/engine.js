@@ -4,9 +4,8 @@ console.log('engine loaded');
 var Engine = function (){
 	
 	this.turn = function(fromX, fromY, toX, toY){
-		let buff = playingField[fromX][fromY];
-		playingField[fromX][fromY] = playingField[toX][toY];		
-		playingField[toX][toY] = buff;
+		myGen.swapElements(fromX, fromY, toX, toY);
+		playingField = myGen.getLevel();
 		return this.anigilate();
 	}
 

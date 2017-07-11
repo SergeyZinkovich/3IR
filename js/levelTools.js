@@ -32,6 +32,12 @@ var levelGenerator = function(aelements, arows, acolumns){
         }
     }
 
+    this.swapElements = function(fromX, fromY, toX, toY){
+        var buff = level[fromX][fromY];
+        level[fromX][fromY] = level[toX][toY];
+        level[toX][toY] = buff;
+    }
+
     this.generateLevel = function(){
         for (var i = 0; i < rows; ++i){
             for (var j = 0; j < columns; ++j){
@@ -66,13 +72,13 @@ var levelChanger = function(alevel, aelements){
 
 /* usage example */
 /*
-var myGen = new levelGenerator(['a','b','c'],5,5);
-myGen.generateLevel();
-var myLevel = myGen.getLevel();
-console.log(myLevel);
+ var myGen = new levelGenerator(['a','b','c'],5,5);
+ myGen.generateLevel();
+ var myLevel = myGen.getLevel();
+ console.log(myLevel);
 
-var myChanger = new levelChanger(myLevel, ['a','b','c']);
-myChanger.replaceWithGenerated('a');
-myLevel = myChanger.getLevel();
-console.log(myLevel);
-*/
+ var myChanger = new levelChanger(myLevel, ['a','b','c']);
+ myChanger.replaceWithGenerated('a');
+ myLevel = myChanger.getLevel();
+ console.log(myLevel);
+ */
