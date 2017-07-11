@@ -63,11 +63,12 @@ $(document).ready(function(){
             that.isAnimationInProgress = false;
         });
 
-        setTimeout(function(destroyed) {that.updateLevel.call(that, destroyed)}, FALL_TIME+200, engine.anigilate());
+        setTimeout(function(destroyed) {that.updateLevel.call(that, destroyed)}, FALL_TIME+50, engine.anigilate());
     }
 
     Game.prototype.updateLevel = function(destroyed){
 		console.log('updating level');
+        $('#score-box').text(engine.getScore()+' Points');
 		if (!destroyed) {
             this.isAnimationInProgress = false;
             console.log('animation unblocked');
