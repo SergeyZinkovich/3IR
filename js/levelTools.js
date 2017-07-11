@@ -4,15 +4,15 @@
 "use strict"
 
 function randomInteger(min, max) {
-    var rand = min - 0.5 + Math.random() * (max - min + 1)
+    var rand = min - 0.5 + Math.random() * (max - min + 1);
     rand = Math.round(rand);
     return rand;
 }
 
-var levelGenerator = function(aelements, arows, acolumns){
+var levelTools = function(aelements, arows, acolumns){
     var elements;
     var rows, columns;
-    var level;
+    var map;
     setElements(aelements);
     setSize(arows, acolumns);
 
@@ -23,50 +23,41 @@ var levelGenerator = function(aelements, arows, acolumns){
     function setSize(arows, acolumns){
         rows = arows;
         columns = acolumns;
-        level = new Array(rows);
+        map = new Array(rows);
         for (var i = 0; i < rows; ++i){
-            level[i] = new Array(columns);
+            map[i] = new Array(columns);
             for (var j = 0; j < columns; ++j){
-                level[i][j] = {};
+                map[i][j] = {};
             }
         }
     }
 
     this.swapElements = function(fromX, fromY, toX, toY){
-        var buff = level[fromX][fromY];
-        level[fromX][fromY] = level[toX][toY];
-        level[toX][toY] = buff;
+        var buff = map[fromX][fromY];
+        map[fromX][fromY] = map[toX][toY];
+        map[toX][toY] = buff;
     }
 
     this.generateLevel = function(){
         for (var i = 0; i < rows; ++i){
             for (var j = 0; j < columns; ++j){
-                level[i][j] = elements[randomInteger(0,elements.length-1)];
+                map[i][j] = elements[randomInteger(0,elements.length-1)];
             }
         }
     }
 
-    this.getLevel = function(){
-        return(level);
-    }
-}
-
-var levelChanger = function(alevel, aelements){
-    var level = alevel;
-    var elements = aelements;
-
     this.replaceWithGenerated = function(elementForReplacing){
-        for (var i = 0; i < level.length; ++i){
-            for (var j = 0; j < level[i].length; ++j){
-                if (level[i][j] === elementForReplacing){
-                    level[i][j] = elements[randomInteger(0,elements.length-1)];
+        for (var i = 0; i < map.length; ++i){
+            for (var j = 0; j < map[i].length; ++j){
+                if (map[i][j] === elementForReplacing){
+                    map[i][j] = elements[randomInteger(0,elements.length-1)];
                 }
             }
         }
     }
 
-    this.getLevel = function(){
-        return(level);
+    this.getMap = function(){
+        return(map);
     }
 }
 
@@ -74,11 +65,11 @@ var levelChanger = function(alevel, aelements){
 /*
  var myGen = new levelGenerator(['a','b','c'],5,5);
  myGen.generateLevel();
- var myLevel = myGen.getLevel();
+ var myLevel = myGen.getMap();
  console.log(myLevel);
 
  var myChanger = new levelChanger(myLevel, ['a','b','c']);
  myChanger.replaceWithGenerated('a');
- myLevel = myChanger.getLevel();
+ myLevel = myChanger.getMap();
  console.log(myLevel);
  */
