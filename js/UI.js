@@ -98,7 +98,10 @@ $(document).ready(function(){
         var id1 = cell1.attr('id').split('-');
         var id2 = cell2.attr('id').split('-');
 
-        var destroyed = engine.turn(id1[0], id1[1], id2[0], id2[1]);//todo перенести?
+        if (!((Math.abs(id2[0]-id1[0]) === 1 && id2[1] === id1[1]) ||  (Math.abs(id2[1]-id1[1]) === 1 && id2[0] === id1[0]))) {
+            this.isAnimationInProgress = false;
+            return;
+        }
 
         var cell1Img = cell1.find('img');
         var cell2Img = cell2.find('img');
@@ -125,8 +128,69 @@ $(document).ready(function(){
                 cell2Img.css({'top': 0, 'left': 0});
                 cell2Img.attr('src', cell1ImgPath);
                 cell2Img.css('z-index', 100);
-				that.updateLevel(destroyed);
+        //         if (that.validateTurn(id1[0], id1[1], id2[0], id2[1])) {
+				    // that.updateLevel(destroyed);
+                //}
+                that.validateTurn(id1[0], id1[1], id2[0], id2[1]);
         });
+        // setTimeout(function(that) {that.validateTurn.call(that, id1[0], id1[1], id2[0], id2[1]);},  SWAP_TIME + 100, that);
+    };
+
+    Game.prototype.validateTurn = function(i1, j1, i2, j2){
+        var that = this;
+        var nextDestroy = engine.turn(i1, j1, i2, j2);
+        if (nextDestroy) {
+            this.updateLevel(nextDestroy);
+        }
+        else {
+            var cell1Img = $('#'+i1+'-'+j1+' img');
+            var cell2Img = $('#'+i2+'-'+j2 +' img');
+
+            var cell1ImgPath = cell1Img.attr('src');
+            var cell2ImgPath = cell2Img.attr('src');
+
+            cell1Img.css('z-index', 1000);
+            cell2Img.css('z-index', 1000);
+
+            cell1Img.animate({
+                'top': CELL_SIZE * (i2-i1) + 'px',
+                'left': CELL_SIZE * (j2-j1) + 'px'},
+                SWAP_TIME, function() {
+                    cell1Img.css({'top': 0, 'left': 0});
+                    cell1Img.css('z-index', 100);
+                    cell1Img.attr('src', cell2ImgPath);
+            });
+
+            cell2Img.animate({
+                'top': CELL_SIZE * (i1-i2) + 'px',
+                'left': CELL_SIZE * (j1-j2) + 'px'},
+                SWAP_TIME, function() {
+                    cell2Img.css({'top': 0, 'left': 0});
+                    cell2Img.attr('src', cell1ImgPath);
+                    cell2Img.css('z-index', 100);
+                    that.updateLevel(false);//nothing to destroy
+                    //}
+            });
+        }
+
+        // else {
+        //     // cell1Img.css('z-index', 1000);
+        //     // cell2Img.css('z-index', 1000);
+        //     $('#'+i1+'-'+j1).animate({
+        //         'top': CELL_SIZE * (i2-i1) + 'px',
+        //         'left': CELL_SIZE * (j2-j1) + 'px'},
+        //         SWAP_TIME, function() {
+        //             $('#'+i1+'-'+j1).css('z-index', 100);
+        //     });
+
+        //     $('#'+i2+'-'+j2).animate({
+        //         'top': CELL_SIZE * (i1-i2) + 'px',
+        //         'left': CELL_SIZE * (j1-j2) + 'px'},
+        //         SWAP_TIME, function() {
+        //             $('#'+i2+'-'+j2).css('z-index', 100);
+        //              that.updateLevel(false);//nothing to destroy
+        //     });
+        // }
     };
 
     Game.prototype.destroyGems = function(gems) {
