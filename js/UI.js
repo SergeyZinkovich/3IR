@@ -21,8 +21,10 @@ $(document).ready(function() {
     };
 	
 	Game.prototype.redrawGrid = function(){
+		console.log('redraw');
+        this.level = engine.getPlayingField(); 
 		this.gameGrid.empty();
-		this.level = engine.getPlayingField();
+		//this.level = engine.getPlayingField();
         for (let i = 0; i < GAME_GRID_HEIGHT; ++i) {
             for (let j = 0; j < GAME_GRID_WIDTH; ++j) {
                 var id = i + '-' + j;
@@ -36,19 +38,22 @@ $(document).ready(function() {
 	}
 
     Game.prototype.updateLevel = function(destroyed){
+		console.log('update level');
+		if (!destroyed)
+			return;
 		this.destroyGems.call(this, destroyed);
         // this.gameGrid.empty();
-        // this.level = getPlayingField(); 
-		var destroyNext = engine.anigilate();
-        if(destroyNext) {
-            this.isAnimationInProgress = true;
-            console.log('animation blocked');
-            setTimeout(function(game, destroyNext) {game.updateLevel(destroyNext)}, 5000, this, destroyNext);
-        }
-        else {
-            this.isAnimationInProgress = false;
-            console.log('animation unblocked');
-        }
+		//var destroyNext = engine.anigilate();
+		//this.level = engine.getPlayingField();
+        // if(destroyNext) {
+            // this.isAnimationInProgress = true;
+            // console.log('animation blocked');
+            // setTimeout(function(game, destroyNext) {game.updateLevel(destroyNext)}, 5000, this, destroyNext);
+        // }
+        // else {
+            // this.isAnimationInProgress = false;
+            // console.log('animation unblocked');
+        // }
     };
 
     Game.prototype.userClick = function(cell){
@@ -127,7 +132,7 @@ $(document).ready(function() {
 		}
       
 		
-		setTimeout(function(game) {game.redrawGrid.call(game);}, 4000, this);
+		setTimeout(function(game) {game.redrawGrid.call(game);}, 2000, this);
 
     };
 
