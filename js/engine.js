@@ -19,23 +19,24 @@ var Engine = function (){
 	this.getPlayingField = function(){
 		return playingField;
 	}
+	
+	this.getScore = function(){
+		return score;
+	}
 
 	this.anigilate = function(){
 		let beg;
+		let ans = [];
 		for (let i = 0; i < playingField.length; i++){
 			beg = 0;
 			for (let j = 0; j < playingField[0].length; j++){
 				if ((playingField[i][j] != playingField[i][beg]) || (j === playingField[0].length - 1)){
 					if (playingField[i][j] === playingField[i][beg]){j++;}
 					if (j - beg > 2){
-						let ans = [];
 						for (let h = beg; h < j; h++){
 							playingField[i][h] = -1;
 							ans.push([i, h]);
 						}
-						gemFall(ans);
-						doGen();
-						return ans;
 					}
 					else{
 						beg = j;
@@ -49,14 +50,10 @@ var Engine = function (){
 				if ((playingField[j][i] != playingField[beg][i]) || (j === playingField.length - 1)){
 					if (playingField[j][i] === playingField[beg][i]){j++;}
 					if (j - beg > 2){
-						let ans = [];
 						for (let h = beg; h < j; h++){
 							playingField[h][i] = -1;
 							ans.push([h, i]);
 						}
-						gemFall(ans);
-						doGen();
-						return ans;
 					}
 					else{
 						beg = j;
@@ -64,7 +61,15 @@ var Engine = function (){
 				}
 			}
 		}
-		return false;
+		if (ans.length > 0){
+			score += 30 *ans.length;
+			gemFall(ans);
+			doGen();
+			return ans;
+		}
+		else{
+			return false;
+		}
 	}
 
 	this.canAnigilate = function(){
