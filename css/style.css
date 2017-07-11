@@ -1,3 +1,6 @@
+ @font-face { font-family: Brewsky; src: url('../fonts/Brewsky.ttf'); } 
+
+
 * {
     margin: 0;
     padding: 0;
@@ -6,6 +9,8 @@
 #game-grid {
     display: block;
     margin: 0 auto;
+	border: 4px double blue;
+	background:  #ffcc99;
 }
 
 .game-cell {
@@ -18,7 +23,7 @@
 }
 
 .game-cell:hover {
-    background-color: #000000;
+    background-color: #0000ff;
 }
 
 .selected-cell {
@@ -37,4 +42,16 @@
 
 .destroy {
     display: none;
+}
+
+h1 {
+	font-family: Brewsky, sans-serif; 
+	color: red; 
+	text-align: center;
+	font-size: 500%;
+}
+
+body {
+	background: url(../img/back.jpg) Black;
+	background-size: cover
 }
