@@ -29,11 +29,12 @@
 
 .selected-cell {
     z-index: 0;
-    background-color: blue;
+    background: url('../img/select.png');
+    /* background-color: blue; */
 }
 
 .selected-cell:hover {
-    background-color: blue;
+    /* background-color: blue; */
 }
 
 #game-grid img {
