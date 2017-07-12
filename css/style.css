@@ -44,8 +44,13 @@
 }
 
 .destroyed {
-/*     display: none;
-    background-color: red;
+    background-color: black;
+    background: url('../img/boom.png');
+}
+
+.destroyed img{
+    display: none;
+    /* background-color: red; */
     width: 32px;
     height: 32px; */
 }
@@ -69,17 +74,20 @@ body {
 	background-size: cover cover;
 }
 
-#score-box {
+#level-status {
     /* position: absolute; */
     text-align: center;
     font-size: 48px;
     margin: 0 auto;
-    display: block;
     font-family: Brewsky, sans-serif;
     /* background-color: #0C0C0C; */
 }
 
-#status-box {
+#level-status div {
+    display: inline-block;
+}
+
+#gem-upgrade-box {
     font-size: 36px;
     margin: 20px auto 0;
     display: block;
@@ -101,4 +109,12 @@ body {
     width: 48px;
     height: 48px;
     vertical-align: middle;
+}
+
+#score-box {
+    margin-right: 20px;
+}
+
+#timer {
+    /* display: block; */
 }
