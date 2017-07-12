@@ -21,6 +21,8 @@ $(document).ready(function(){
             'height': CELL_SIZE * GAME_GRID_HEIGHT + 'px'
         });
 
+		$('#status-box').css('width', CELL_SIZE * GAME_GRID_WIDTH + 'px');
+
         this.updateLevel(false);
 		this.createGrid();
     };
