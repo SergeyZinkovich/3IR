@@ -75,7 +75,7 @@ $(document).ready(function(){
             that.isAnimationInProgress = false;
         });
 
-        setTimeout(function(destroyed) {that.updateLevel.call(that, destroyed)}, FALL_TIME+50, engine.anigilate());
+        setTimeout(function(destroyed) {that.updateLevel.call(that, destroyed)}, FALL_TIME+50, engine.annihilate());
     }
 
     Game.prototype.updateLevel = function(destroyed){

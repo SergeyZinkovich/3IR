@@ -9,7 +9,7 @@ function randomInteger(min, max) {
     return rand;
 }
 
-var levelTools = function(aelements, arows, acolumns, difficulty){
+var gameLevel = function(aelements, arows, acolumns, difficulty){
 	var scoreCoeff = 5;
 	var numberOfElements = 5;
     var elements;
