@@ -10,13 +10,32 @@ $(document).ready(function(){
     const FALL_TIME = 500;
     const SWAP_TIME = 400;
     const BOOM_TIME = 500;
+
+    const DEBUG_TIME = 5;//sec
+
     var Game = function () { 
-        //create game grid
+        this.initialize(false);
+    };
+
+    Game.prototype.initialize = function(isGenerate){
+        console.log('-----INIT---------')
         this.isAnimationInProgress = false;
         this.gameGrid = $('#game-grid');
-		this.level = engine.getPlayingField();
-        this.statusBox = $('#gem-upgrade-box');
 
+        if(isGenerate) {
+            engine.generateLevel();
+        }
+
+        this.level = engine.getPlayingField();
+
+        //create game grid
+        this.statusBox = $('#gem-upgrade-box');
+        this.timer = $("#timer");
+        this.levelEndTime = new Date().getTime() + engine.getTimeTask() * 1000;
+        this.requiredScore = engine.getScoreTask();
+        this.waitAnimationInterval = false;
+
+        console.log('req'+ this.requiredScore);
 
         $("#game-grid").css({
             'width': CELL_SIZE * GAME_GRID_WIDTH + 'px',
@@ -25,12 +44,14 @@ $(document).ready(function(){
 
 		$('#gem-upgrade-box').css('width', CELL_SIZE * GAME_GRID_WIDTH + 'px');
 
+        this.createTimer();
         this.updateStatusBox();
         this.updateLevel(false);
 		this.createGrid();
+
     };
 
-	Game.prototype.createGrid = function(){
+    Game.prototype.createGrid = function(){
 		var that = this;
 		console.log('draw');
         this.level = engine.getPlayingField(); 
@@ -77,10 +98,16 @@ $(document).ready(function(){
 
     Game.prototype.updateLevel = function(destroyed){
         console.log('updating level');
-
         this.updateStatusBox();
         this.updateScore();
         this.animateDestruction(destroyed);
+
+        if (engine.levelPassed() && this.isAnimationInProgress == false) {
+            console.log('check');
+            this.endGame(false);
+            return;
+        }
+
     };
 
     Game.prototype.userClick = function(cell){
@@ -204,9 +231,79 @@ $(document).ready(function(){
         });
     };
 
-    Game.prototype.updateScore = function(){
-        $('#score-box').text(engine.getScore()+' Points');
+    Game.prototype.createTimer = function(){
+        var that = this;
+        this.timerInterval = setInterval(function(){
+            var currTime = new Date().getTime();
+            var timeLeft = that.levelEndTime - currTime;
+            if (timeLeft < 0) {
+                clearInterval(that.timerInterval);
+                that.timeEnd();
+            }
+            else {
+                that.updateTimer(timeLeft);
+            }
+        }, 1000);
     };
 
-    var game = new Game();
+    Game.prototype.updateTimer = function(time){
+        // this.timer.text(Math.round((this.levelEndTime - new Date().getTime())/1000));
+        this.timer.text(Math.round(time/1000));
+    };
+
+    Game.prototype.timeEnd = function(){
+        console.log('time end');
+        var that = this;
+        clearInterval(this.timerInterval);
+        alert("you loose");
+        that.initialize(true);
+        // console.log('time is out');
+        // var waitAnimationInterval =  setInterval(function(handler){
+        //     if(!that.isAnimationInProgress) {
+        //         clearInterval(handler);
+
+        //         // that.endGame();
+        //     }
+        // }, 500, waitAnimationInterval);
+        // // this.endGame();
+        // this = new Game();
+    };
+
+    Game.prototype.endGame = function(isAnimationFinished){
+        var that = this;
+        console.log('--------------end-------------');
+        clearInterval(this.timerInterval);
+        that.initialize(true);
+        // console.log(isAnimationFinished);
+        // console.log(that.waitAnimationInterval);
+        // if (that.waitAnimationInterval) {
+        //     return;
+        // }
+        // if(!isAnimationFinished) {
+        //     console.log('set inteval**');
+        //     that.waitAnimationInterval = setInterval(function() {
+        //         console.log('tick');
+        //         if(!that.isAnimationInProgress) {
+        //             console.log('tick 2');
+        //             clearInterval(that.waitAnimationInterval);
+        //             that.waitAnimationInterval = null;
+        //             console.log('inteval cleared');
+        //             // that.isAnimationInProgress = true;
+        //             setTimeout(function() {
+        //                 console.log('time out 1');
+        //                 that.endGame(true);
+        //             }, 200);
+        //         }
+        //     }, 0);
+        // }
+        // else {
+        //     that.initialize(true);
+        // }
+    };
+    Game.prototype.updateScore = function(){
+        $('#score-box').text(engine.getScore() + '/' + this.requiredScore + ' Pts №'+engine.getLevelNumber());
+    };
+
+    var game = new Game(false);
+
 });
