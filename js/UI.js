@@ -28,6 +28,7 @@ $(document).ready(function(){
     };
 
 	Game.prototype.createGrid = function(){
+		var that = this;
 		console.log('draw');
         this.level = engine.getPlayingField(); 
 		this.gameGrid.empty();
@@ -40,6 +41,15 @@ $(document).ready(function(){
                 $('#' + id).click({game: this}, function(e) {
                     e.data.game.userClick($(this));
                 });
+
+				$('#' + id).click({game: this}, function(e) {
+                    e.data.game.userClick($(this));
+                });
+
+				$('#' + id).on('dragstart', function(event) {
+					event.preventDefault();
+					that.userClick($(this));
+				});
             }
         }
     };
