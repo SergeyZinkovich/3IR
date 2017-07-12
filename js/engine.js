@@ -153,7 +153,7 @@ var Engine = function (){
 	
 	function upgradeGems(){
 		for (let i = 0; i < gemsCount.length; i++){
-			if ((gemsCount[i] > 15) && (Math.floor(gems[i] / gems.length) < 2)){
+			if ((gemsCount[i] >= gemsTasks[i]) && (Math.floor(gems[i] / gems.length) < 2)){
 				replaceUpgradedGem(gems[i]);
 				gems[i] += gems.length;
 				gemsCount[i] = 0;
@@ -164,7 +164,11 @@ var Engine = function (){
 	this.getGemsStatus = function(){
 		let ans = [];
 		for (let i = 0; i < gems.length; i++){
-			ans.push([gems[i], gemsCount[i]]);
+			let buff = gemsTasks[i] - gemsCount[i];
+			if ((buff < 0) || Math.floor(gems[i] / gems.length) === 2){
+				buff = "max"
+			}
+			ans.push([gems[i], buff]);
 		}
 		return ans;
 	}
@@ -173,9 +177,11 @@ var Engine = function (){
 	var score = 0;
 	var gems = [0, 1, 2, 3, 4];
 	var gemsCount = [0, 0, 0, 0, 0]; 
-	var gameLevel = new levelTools(gems, 8, 8);
+	var gameLevel = new levelTools(gems, 8, 8, 1);
 	gameLevel.generateLevel();
 	var playingField = gameLevel.getMap();
+	var gemsTasks = gameLevel.getUpgradeConditions();
+	console.log(gemsTasks);
 	check.apply(this);
 	gameStatus = 1;
 }
