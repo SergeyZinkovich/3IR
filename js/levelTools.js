@@ -9,15 +9,28 @@ function randomInteger(min, max) {
     return rand;
 }
 
-var levelTools = function(aelements, arows, acolumns){
+var levelTools = function(aelements, arows, acolumns, difficulty){
+	var scoreCoeff = 5;
+	var numberOfElements = 5;
     var elements;
     var rows, columns;
     var map;
+	var passScore, passTime;
+	var upgradeConditions = new Array(aelements.length);
     setElements(aelements);
     setSize(arows, acolumns);
 
+	function setUpgradeConditions(){
+		for (var i = 0; i < elements.length; ++i){
+			if (upgradeConditions[i] === undefined){
+				upgradeConditions[i] = randomInteger(0,7)+(10*difficulty)+difficulty*randomInteger(0,difficulty);
+			}
+		}		
+	}
+	
     function setElements(aelements){
         elements = aelements;
+		setUpgradeConditions();
     }
 
     function setSize(arows, acolumns){
@@ -44,6 +57,9 @@ var levelTools = function(aelements, arows, acolumns){
                 map[i][j] = elements[randomInteger(0,elements.length-1)];
             }
         }
+		setUpgradeConditions();
+		passTime = randomInteger(20, 100);
+		passScore = passTime*(10*difficulty);
     }
 
     this.replaceWithGenerated = function(elementForReplacing){
@@ -55,6 +71,18 @@ var levelTools = function(aelements, arows, acolumns){
             }
         }
     }
+	
+	this.getUpgradeConditions = function(){
+		return (upgradeConditions);
+	}
+	
+	this.getPassTime = function(){
+		return (passTime);
+	}
+	
+	this.getPassScore = function(){
+		return (passScore);
+	}	
 
     this.getMap = function(){
         return(map);
