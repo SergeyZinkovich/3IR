@@ -177,7 +177,7 @@ var Engine = function (){
 	var score = 0;
 	var gems = [0, 1, 2, 3, 4];
 	var gemsCount = [0, 0, 0, 0, 0]; 
-	var gameLevel = new gameLevel(gems, 8, 8, 1);
+	var gameLevel = new GameLevel(gems, 8, 8, 1);
 	gameLevel.generateLevel();
 	var playingField = gameLevel.getMap();
 	var gemsTasks = gameLevel.getUpgradeConditions();
