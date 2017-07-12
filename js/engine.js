@@ -153,7 +153,7 @@ var Engine = function (){
 	
 	function upgradeGems(){
 		for (let i = 0; i < gemsCount.length; i++){
-			if ((gemsCount[i] >= gemsTasks[i]) && (Math.floor(gems[i] / gems.length) < 2)){
+			if ((gemsCount[i] >= gemsTasks[i]) && (Math.floor(gems[i] / gems.length) < 4)){
 				replaceUpgradedGem(gems[i]);
 				gems[i] += gems.length;
 				gemsCount[i] = 0;
@@ -165,7 +165,7 @@ var Engine = function (){
 		let ans = [];
 		for (let i = 0; i < gems.length; i++){
 			let buff = gemsTasks[i] - gemsCount[i];
-			if ((buff < 0) || Math.floor(gems[i] / gems.length) === 2){
+			if ((buff < 0) || Math.floor(gems[i] / gems.length) === 4){
 				buff = "max"
 			}
 			ans.push([gems[i], buff]);
