@@ -15,6 +15,7 @@ $(document).ready(function(){
         this.isAnimationInProgress = false;
         this.gameGrid = $('#game-grid');
 		this.level = engine.getPlayingField();
+        this.statusBox = $('#status-box');
 
         $("#game-grid").css({
             'width': CELL_SIZE * GAME_GRID_WIDTH + 'px',
@@ -23,6 +24,7 @@ $(document).ready(function(){
 
 		$('#status-box').css('width', CELL_SIZE * GAME_GRID_WIDTH + 'px');
 
+        this.updateStatusBox();
         this.updateLevel(false);
 		this.createGrid();
     };
@@ -180,11 +182,13 @@ $(document).ready(function(){
         console.log('cell drops');
         gemImg.css('top', -1 * CELL_SIZE * height + 'px');
     };
-    
+
     Game.prototype.updateStatusBox = function(){
-        var gemStatus = '';
-        engine.getGemsStatus().forEach(function(elem) {gemStatus += '<img src="img/diamond-'+elem[0]+'.png">:' + elem[1]});
-        $('#status-box').html(gemStatus);
+        var that = this;
+        that.statusBox.find('.gem-status').remove();
+        engine.getGemsStatus().forEach(function(elem) {
+            $('<div id="s-' + elem[0] + '" class="gem-status"><img src="img/diamond-'+ elem[0] +'.png">:' + elem[1] +'</div>').appendTo(that.statusBox);
+        });
     };
 
     Game.prototype.updateScore = function(){
