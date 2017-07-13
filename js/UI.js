@@ -318,7 +318,7 @@ $(document).ready(function(){
     };
 	
 	Game.prototype.hideMenu = function(){
-		this.menu.animate({top:'-200px'}, 400);
+		this.menu.animate({top:'-208px'}, 400);
 	};
 	
     Game.prototype.updateScore = function(){
