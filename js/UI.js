@@ -16,7 +16,7 @@ $(document).ready(function(){
     const SWAP_TIME = 400;
     const BOOM_TIME = 500;
 
-    const GAME_LOST  = 0;
+    const GAME_TIMEOUT  = 0;
     const GAME_PLAYING = 1;
     const GAME_END = 2;
 
@@ -283,6 +283,7 @@ $(document).ready(function(){
         var that = this;
         clearInterval(this.timerInterval);
         console.log('time end');
+        that.gameState = GAME_TIMEOUT;
         that.updateLevel();
     };
 
