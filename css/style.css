@@ -129,15 +129,57 @@ body {
 }
 
 #menu {
+    padding-top: 100px;
 	display: block;
 	position: absolute;
  	margin-left: -200px;
 	margin-top: -200px; 
-	background-color: white;
+	background-color: #17005d;
 	width: 400px;
-	height: 400px;
- 	/*top:-400px;*/
-	top: -200px;
-	left:50%;
+	height: 300px;
+ 	/* top:-400px; */
+	top: -208px;
+	left: 50%;
 	z-index: 2000;
+    border-radius: 10px;
+    border: 4px solid black;
+}
+
+#game-result {
+    text-align: center;
+    color: #FFC000;
+    font-size: 48px;
+    margin: 20px auto 0;
+    display: block;
+    font-family: Brewsky, sans-serif;
+}
+
+#restart-btn {
+  background: #f7b900;
+  background-image: -webkit-linear-gradient(top, #f7b900, #d1661f);
+  background-image: -moz-linear-gradient(top, #f7b900, #d1661f);
+  background-image: -ms-linear-gradient(top, #f7b900, #d1661f);
+  background-image: -o-linear-gradient(top, #f7b900, #d1661f);
+  background-image: linear-gradient(to bottom, #f7b900, #d1661f);
+  -webkit-border-radius: 6;
+  -moz-border-radius: 6;
+  border-radius: 6px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+}
+
+#restart-btn:hover {
+  background: #fc9f3c;
+  text-decoration: none;
+}
+
+.win span{
+    color: green;
+}
+
+.loose span{
+    color: red;
 }

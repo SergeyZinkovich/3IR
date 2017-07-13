@@ -2,6 +2,11 @@
 
 $(document).ready(function(){
     console.log('UI loaded')
+    const WIN_TEXT = '<span>Level passed!</span> Continue?';
+    const LOOSE_TEXT = '<span>You lost!</span> Try again?';
+
+    const BTN_WIN_TEXT = 'Continue';
+    const BTN_LOOSE_TEXT = 'Retry';
 
     const GAME_GRID_WIDTH = 8;
     const GAME_GRID_HEIGHT = 8;
@@ -19,9 +24,8 @@ $(document).ready(function(){
 
     var Game = function () { 
 		var that = this;
-        this.initialize(false);
 		this.menu = $('#menu');
-		
+        this.initialize(false);
     };
 
     Game.prototype.initialize = function(isGenerate){
@@ -30,7 +34,7 @@ $(document).ready(function(){
 
         this.isAnimationInProgress = false;
         this.gameGrid = $('#game-grid');
-		this.isDestructionInProgress = false;
+        this.isDestructionInProgress = false;
         if(isGenerate) {
             engine.generateLevel();
         }
@@ -44,20 +48,17 @@ $(document).ready(function(){
         this.levelEndTime = new Date().getTime() + engine.getTimeTask() * 1000;
         // this.levelEndTime = new Date().getTime() + DEBUG_TIME;
 
-        //console.log('req'+ this.requiredScore);
-
         $("#game").css({
             'width': CELL_SIZE * GAME_GRID_WIDTH + 'px',
             'height': CELL_SIZE * GAME_GRID_HEIGHT + 'px'
         });
 
-		$('#gem-upgrade-box').css('width', CELL_SIZE * GAME_GRID_WIDTH + 'px');
+        $('#gem-upgrade-box').css('width', CELL_SIZE * GAME_GRID_WIDTH + 'px');
 
         this.createTimer();
         this.updateStatusBox();
         this.updateLevel(false);
-		this.createGrid();
-
+        this.createGrid();
     };
 
     Game.prototype.createGrid = function(){
@@ -295,13 +296,23 @@ $(document).ready(function(){
     
     Game.prototype.showMenu = function(isWin){
         var that = this;
-        this.menu.one('click', function() {
+        // this.menu.one('click', function() {
+        //     that.hideMenu();
+        //     that.initialize(true);
+        // });
+        var resultText = isWin ? WIN_TEXT : LOOSE_TEXT;
+        var btnText = isWin ? BTN_WIN_TEXT : BTN_LOOSE_TEXT; 
+
+        var resultDiv = $('<div id="result-text">' + resultText + '</div>');
+        var button = $('<button id="restart-btn">' + btnText + '</btn>');
+
+        resultDiv.addClass(isWin ? 'win' : 'loose');
+
+        $('#game-result').empty().append(resultDiv).append(button);
+        
+        this.menu.animate({top:'50%'}, 400);
+        $('#restart-btn').one('click', function(){
             that.hideMenu();
-            that.initialize(true);
-        });
-        var that = this;
-        this.menu.empty().animate({top:'50%'}, 400).append('<p>'+ (isWin ? 'You win' : 'You loose')+'</p><button id="restart-btn">restart</button>');
-        $('#restart-btn').click(function(){
             that.initialize(true);
         });
     };
@@ -311,9 +322,9 @@ $(document).ready(function(){
 	};
 	
     Game.prototype.updateScore = function(){
-        $('#score-box').text(engine.getScore() + '/' + this.requiredScore + ' Pts №'+engine.getLevelNumber());
+        $('#score-box').text(engine.getScore() + '/' + this.requiredScore + ' Pts. lvl №'+engine.getLevelNumber());
     };
 
-    var game = new Game(false);
+    var game = new Game();
 
 });
