@@ -122,7 +122,7 @@ $(document).ready(function(){
             that.isAnimationInProgress = false;
         });
 
-        setTimeout(function(destroyed) {that.updateLevel(destroyed)}, FALL_TIME+10, engine.annihilate());
+        setTimeout(function(destroyed) {that.updateLevel(destroyed)}, FALL_TIME+50, engine.annihilate());
     }
 
 
@@ -136,7 +136,9 @@ $(document).ready(function(){
         //     this.gameState = GAME_END;
         // }
         if (!this.isAnimationInProgress) {
+            console.log('animation is not in progress');
             if (this.gameState !== GAME_PLAYING || engine.levelPassed()) {
+                console.log('ending');
                 this.endGame();
             }
         }
@@ -201,8 +203,8 @@ $(document).ready(function(){
         var nextDestroy = engine.turn(id1[0], id1[1], id2[0], id2[1],)
 
         if(!nextDestroy) {
-            setTimeout(function(cell1, cell2, id1, id2) {that.animateSwap(cell1, cell2, id1, id2);}, SWAP_TIME+30, cell1, cell2, id1, id2);
-            setTimeout(function(nextDestr) {that.updateLevel(nextDestr);}, SWAP_TIME*2+50, nextDestroy);
+            setTimeout(function(cell1, cell2, id1, id2) {that.animateSwap(cell1, cell2, id1, id2);}, SWAP_TIME+50, cell1, cell2, id1, id2);
+            setTimeout(function(nextDestr) {that.updateLevel(nextDestr);}, SWAP_TIME + 100, nextDestroy);
         }
         else {
             setTimeout(function(nextDestr) {that.updateLevel(nextDestr);}, SWAP_TIME+50, nextDestroy);
@@ -213,14 +215,13 @@ $(document).ready(function(){
     Game.prototype.animateDestruction = function(gems){
         var that = this;
         if(!gems) {
-			that.isDestructionInProgress = false;
             return;
 		}
-		that.isDestructionInProgress = true;
 		
         gems.forEach(function(gem, index, array) {
             that.gameGrid.find('#'+gem[0]+'-'+gem[1]).addClass('destroyed');
         });
+
         that.isAnimationInProgress = true;
         setTimeout(function() {
             that.isAnimationInProgress = false;
