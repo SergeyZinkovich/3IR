@@ -122,8 +122,11 @@ $(document).ready(function(){
         this.updateScore();
         this.animateDestruction(destroyed);
 
+        // if(engine.levelPassed()) {
+        //     this.gameState = GAME_END;
+        // }
         if (!this.isAnimationInProgress) {
-            if (this.gameState !== GAME_PLAYING) {
+            if (this.gameState !== GAME_PLAYING || engine.levelPassed()) {
                 this.endGame();
             }
         }
@@ -272,15 +275,20 @@ $(document).ready(function(){
     };
     
     Game.prototype.timeEnd = function(){
+        if(this.gameState === GAME_END) {
+            console.log('tiemend retutn');
+            return;
+        }
         var that = this;
-        that.gameState = GAME_END;
-        console.log('time end');
         clearInterval(this.timerInterval);
+        console.log('time end');
         that.updateLevel();
     };
 
     Game.prototype.endGame = function(){
         var that = this;
+        that.gameState = GAME_END;
+        clearInterval(this.timerInterval);
         console.log('--------------end-------------');
         that.showMenu(engine.levelPassed());
     };
