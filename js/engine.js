@@ -188,7 +188,6 @@ var Engine = function (){
 		else{
 			return false;
 		}
-		levelNumber++;
 	}
 	
 	this.getLevelNumber = function(){
@@ -196,11 +195,12 @@ var Engine = function (){
 	}
 	
 	this.generateLevel = function(){
+		levelNumber++;
 		gameStatus = 0;
 		score = 0;
 		gems = [0, 1, 2, 3, 4];
 		gemsCount = [0, 0, 0, 0, 0]; 
-		gameLevel = new GameLevel(gems, 8, 8, 1);
+		gameLevel = new GameLevel(gems, 8, 8, levelNumber);
 		gameLevel.generateLevel();
 		playingField = gameLevel.getMap();
 		gemsTasks = gameLevel.getUpgradeConditions();
@@ -210,7 +210,7 @@ var Engine = function (){
 		gameStatus = 1;
 	}
 	
-	var levelNumber = 1;
+	var levelNumber = 0;
 	var gameStatus;
 	var score;
 	var gems;
