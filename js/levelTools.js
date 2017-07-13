@@ -12,6 +12,7 @@ function randomInteger(min, max) {
 var GameLevel = function(aelements, arows, acolumns, difficulty){
 	var scoreCoeff = 5;
 	var numberOfElements = 5;
+	var bomb = '-1';
     var elements;
     var rows, columns;
     var map;
@@ -20,6 +21,12 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
     setElements(aelements);
     setSize(arows, acolumns);
 
+	function generateBombs(){
+		for (var i = 0; i < Math.floor(randomInteger(0,3)); ++i){
+			map[Math.floor(randomInteger(0,rows-1))][Math.floor(randomInteger(0,columns-1))] = bomb;
+		}
+	}
+	
 	function setUpgradeConditions(){
 		for (var i = 0; i < elements.length; ++i){
 			if (upgradeConditions[i] === undefined){
@@ -59,6 +66,7 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
 		passTime = Math.floor(randomInteger(20, 100));
 		passScore = Math.round(passTime*(4*Math.max(Math.log(difficulty),1)));
 		setUpgradeConditions();
+		generateBombs();
     }
 
     this.replaceWithGenerated = function(elementForReplacing){
@@ -69,6 +77,7 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
                 }
             }
         }
+		generateBombs();
     }
 	
 	this.getUpgradeConditions = function(){
@@ -90,13 +99,9 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
 
 /* usage example */
 /*
- var myGen = new levelGenerator(['a','b','c'],5,5);
+ var myGen = new GameLevel(['a','b','c'],5,5);
  myGen.generateLevel();
  var myLevel = myGen.getMap();
  console.log(myLevel);
-
- var myChanger = new levelChanger(myLevel, ['a','b','c']);
- myChanger.replaceWithGenerated('a');
- myLevel = myChanger.getMap();
- console.log(myLevel);
- */
+*/
+ 
