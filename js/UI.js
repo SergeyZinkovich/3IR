@@ -11,20 +11,23 @@ $(document).ready(function(){
     const SWAP_TIME = 400;
     const BOOM_TIME = 500;
 
-    const DEBUG_TIME = 5000;//sec
+    const GAME_LOST  = 0;
+    const GAME_PLAYING = 1;
+    const GAME_END = 2;
+
+    const DEBUG_TIME = 5000;
 
     var Game = function () { 
 		var that = this;
         this.initialize(false);
 		this.menu = $('#menu');
-		this.menu.click(function() {
-			that.hideMenu();
-			that.initialize(true);
-		});
+		
     };
 
     Game.prototype.initialize = function(isGenerate){
         console.log('-----INIT---------')
+        this.gameState= GAME_PLAYING;
+
         this.isAnimationInProgress = false;
         this.gameGrid = $('#game-grid');
 		this.isDestructionInProgress = false;
@@ -36,12 +39,12 @@ $(document).ready(function(){
 
         //create game grid
         this.statusBox = $('#gem-upgrade-box');
+        this.requiredScore = engine.getScoreTask();
         this.timer = $("#timer");
         this.levelEndTime = new Date().getTime() + engine.getTimeTask() * 1000;
-        this.requiredScore = engine.getScoreTask();
-        this.waitAnimationInterval = false;
+        // this.levelEndTime = new Date().getTime() + DEBUG_TIME;
 
-        console.log('req'+ this.requiredScore);
+        //console.log('req'+ this.requiredScore);
 
         $("#game").css({
             'width': CELL_SIZE * GAME_GRID_WIDTH + 'px',
@@ -105,10 +108,11 @@ $(document).ready(function(){
             'top': 0,
             'left': 0},
             FALL_TIME, function() {
+            console.log('anim unlock');
             that.isAnimationInProgress = false;
         });
 
-        setTimeout(function(destroyed) {that.updateLevel(destroyed)}, FALL_TIME+50, engine.annihilate());
+        setTimeout(function(destroyed) {that.updateLevel(destroyed)}, FALL_TIME+10, engine.annihilate());
     }
 
 
@@ -118,17 +122,15 @@ $(document).ready(function(){
         this.updateScore();
         this.animateDestruction(destroyed);
 
-        if (engine.levelPassed() && !this.isDestructionInProgress) {
-			that.isAnimationInProgress = true;
-            console.log('check');
-            this.endGame(false);
-            return;
+        if (!this.isAnimationInProgress) {
+            if (this.gameState !== GAME_PLAYING) {
+                this.endGame();
+            }
         }
-
     };
 
     Game.prototype.userClick = function(cell){
-        if (this.isAnimationInProgress) {
+        if (this.isAnimationInProgress || this.gameState !== GAME_PLAYING) {
             console.log('user click was blocked');
             return;
         }
@@ -183,14 +185,14 @@ $(document).ready(function(){
         }
 
         this.animateSwap(cell1, cell2, id1, id2);
-
         var nextDestroy = engine.turn(id1[0], id1[1], id2[0], id2[1],)
-        if (nextDestroy) {
-            setTimeout(function(nextDestr) {that.updateLevel(nextDestr);}, SWAP_TIME + 50, nextDestroy);
-            // setTimeout(that.updateLevel, SWAP_TIME + 50, nextDestroy); why not working?
+
+        if(!nextDestroy) {
+            setTimeout(function(cell1, cell2, id1, id2) {that.animateSwap(cell1, cell2, id1, id2);}, SWAP_TIME+30, cell1, cell2, id1, id2);
+            setTimeout(function(nextDestr) {that.updateLevel(nextDestr);}, SWAP_TIME*2+50, nextDestroy);
         }
         else {
-            setTimeout(function(cell1, cell2, id1, id2) {that.animateSwap(cell1, cell2, id1, id2);}, SWAP_TIME + 50, cell1, cell2, id1, id2);
+            setTimeout(function(nextDestr) {that.updateLevel(nextDestr);}, SWAP_TIME+50, nextDestroy);
         }
 
     };
@@ -257,77 +259,48 @@ $(document).ready(function(){
             var currTime = new Date().getTime();
             var timeLeft = that.levelEndTime - currTime;
             that.updateTimer(timeLeft >= 0 ? timeLeft : 0);
-            if (timeLeft < 0 && !that.isAnimationInProgress && !that.isDestructionInProgress) {
-				that.isAnimationInProgress = true;
+            if (timeLeft < 0) {
                 clearInterval(that.timerInterval);
                 that.timeEnd();
             }
         }, 1000);
-		that.updateTimer(that.levelEndTime - new Date().getTime());
+        that.updateTimer(that.levelEndTime - new Date().getTime());
     };
 
     Game.prototype.updateTimer = function(time){
-        // this.timer.text(Math.round((this.levelEndTime - new Date().getTime())/1000));
         this.timer.text(Math.round(time/1000));
     };
-	
+    
     Game.prototype.timeEnd = function(){
-        console.log('time end');
         var that = this;
+        that.gameState = GAME_END;
+        console.log('time end');
         clearInterval(this.timerInterval);
-        that.showMenu();
-        //that.initialize(true);
-        // console.log('time is out');
-        // var waitAnimationInterval =  setInterval(function(handler){
-        //     if(!that.isAnimationInProgress) {
-        //         clearInterval(handler);
-
-        //         // that.endGame();
-        //     }
-        // }, 500, waitAnimationInterval);
-        // // this.endGame();
-        // this = new Game();
+        that.updateLevel();
     };
 
     Game.prototype.endGame = function(){
         var that = this;
         console.log('--------------end-------------');
-        clearInterval(this.timerInterval);
-        that.initialize(true);
-        // console.log(isAnimationFinished);
-        // console.log(that.waitAnimationInterval);
-        // if (that.waitAnimationInterval) {
-        //     return;
-        // }
-        // if(!isAnimationFinished) {
-        //     console.log('set inteval**');
-        //     that.waitAnimationInterval = setInterval(function() {
-        //         console.log('tick');
-        //         if(!that.isAnimationInProgress) {
-        //             console.log('tick 2');
-        //             clearInterval(that.waitAnimationInterval);
-        //             that.waitAnimationInterval = null;
-        //             console.log('inteval cleared');
-        //             // that.isAnimationInProgress = true;
-        //             setTimeout(function() {
-        //                 console.log('time out 1');
-        //                 that.endGame(true);
-        //             }, 200);
-        //         }
-        //     }, 0);
-        // }
-        // else {
-        //     that.initialize(true);
-        // }
+        that.showMenu(engine.levelPassed());
     };
-	
-	Game.prototype.showMenu = function(){
-		this.menu.animate({top:'50%'}, 400);
-	}
+    
+    Game.prototype.showMenu = function(isWin){
+        var that = this;
+        this.menu.one('click', function() {
+            that.hideMenu();
+            that.initialize(true);
+        });
+        var that = this;
+        this.menu.empty().animate({top:'50%'}, 400).append('<p>'+ (isWin ? 'You win' : 'You loose')+'</p><button id="restart-btn">restart</button>');
+        $('#restart-btn').click(function(){
+            that.initialize(true);
+        });
+    };
 	
 	Game.prototype.hideMenu = function(){
 		this.menu.animate({top:'-200px'}, 400);
-	}
+	};
 	
     Game.prototype.updateScore = function(){
         $('#score-box').text(engine.getScore() + '/' + this.requiredScore + ' Pts №'+engine.getLevelNumber());
