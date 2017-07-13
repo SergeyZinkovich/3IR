@@ -94,14 +94,19 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
     }
 
     this.replaceWithGenerated = function(elementForReplacing){
+        var p = generateWithProbability([1,0],[20,80]);
         for (var i = 0; i < map.length; ++i){
             for (var j = 0; j < map[i].length; ++j){
                 if (map[i][j] === elementForReplacing){
+                    if (p === 1){
+                        map[i][j] = bomb;
+                        p = 0;
+                        continue;
+                    }
                     map[i][j] = generateWithProbability(elements,chances);
                 }
             }
         }
-		generateBombs();
     }
 	
 	this.getUpgradeConditions = function(){
