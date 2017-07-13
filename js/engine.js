@@ -225,11 +225,11 @@ var Engine = function (){
 	
 	this.nextLevel = function(){
 		levelNumber++;
-		generateLevel();
+		generateLevel.apply(this);
 	}
 	
 	this.replayLevel = function(){
-		generateLevel();
+		generateLevel.apply(this);
 	}
 	
 	function generateLevel(){
