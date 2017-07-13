@@ -237,7 +237,7 @@ var Engine = function (){
 		score = 0;
 		gems = [0, 1, 2, 3, 4];
 		gemsCount = [0, 0, 0, 0, 0]; 
-		gameLevel = new GameLevel(gems, 5, 5, levelNumber);
+		gameLevel = new GameLevel(gems, 8, 8, levelNumber);
 		gameLevel.generateLevel();
 		playingField = gameLevel.getMap();
 		gemsTasks = gameLevel.getUpgradeConditions();

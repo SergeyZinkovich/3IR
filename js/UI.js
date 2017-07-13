@@ -28,15 +28,22 @@ $(document).ready(function(){
         this.initialize(false);
     };
 
-    Game.prototype.initialize = function(isGenerate){
+    Game.prototype.initialize = function(isNext){
         console.log('-----INIT---------')
         this.gameState= GAME_PLAYING;
 
         this.isAnimationInProgress = false;
         this.gameGrid = $('#game-grid');
         this.isDestructionInProgress = false;
-        if(isGenerate) {
-            engine.generateLevel();
+
+        if (!this.level) {
+            //nothing
+        }
+        else if(isNext) {
+            engine.nextLevel();
+        }
+        else {
+            engine.replayLevel();
         }
 
         this.level = engine.getPlayingField();
@@ -314,7 +321,7 @@ $(document).ready(function(){
         this.menu.animate({top:'50%'}, 400);
         $('#restart-btn').one('click', function(){
             that.hideMenu();
-            that.initialize(true);
+            that.initialize(isWin);
         });
     };
 	
