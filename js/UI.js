@@ -255,7 +255,7 @@ $(document).ready(function(){
         var that = this;
         clearInterval(this.timerInterval);
         alert("you loose");
-        //that.initialize(true);
+        that.initialize(true);
         // console.log('time is out');
         // var waitAnimationInterval =  setInterval(function(handler){
         //     if(!that.isAnimationInProgress) {
