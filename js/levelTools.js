@@ -23,7 +23,7 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
 	function setUpgradeConditions(){
 		for (var i = 0; i < elements.length; ++i){
 			if (upgradeConditions[i] === undefined){
-				upgradeConditions[i] = Math.floor(randomInteger(1,3)+(6*Math.max(Math.log(difficulty),1))*passTime/100);
+				upgradeConditions[i] = Math.floor(randomInteger(1,3)+(2*Math.max(Math.log(difficulty),1))*passTime/100);
 			}
 		}		
 	}
