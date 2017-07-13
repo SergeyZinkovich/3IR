@@ -32,8 +32,7 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
     setSize(arows, acolumns);
 
 	function generateBombs(){
-		var p = generateWithProbability([0,1],[90,10]);
-		console.log('p = ',p);
+		var p = generateWithProbability([1,0],[20,80]);
 		if (p === 1){
 			map[Math.floor(randomInteger(0,rows-1))][Math.floor(randomInteger(0,columns-1))] = bomb;
 		}
@@ -69,19 +68,20 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
         map[toX][toY] = buff;
     }
 
+    function generateChances() {
+        chances = new Array(elements.length);
+        chances[0] = 100 / (chances.length) + (numberOfLevels - difficulty) / 2;
+        chances[1] = 100 / (chances.length) + (numberOfLevels - difficulty) / 3;
+        for (var i = 2; i < chances.length; ++i) {
+            chances[i] = (100 - chances[0] - chances[1]) / (chances.length - 2);
+        }
+        for (var i = 1; i < chances.length; ++i) {
+            chances[i] += chances[i - 1];
+        }
+    }
+
     this.generateLevel = function(){
-		chances = new Array(elements.length);
-		chances[0] = 100/(chances.length);
-		chances[1] = 100/(chances.length);
-		for (var i = 2; i < chances.length; ++i){
-			chances[i] = 100/(chances.length);
-		}			
-		console.log(chances);
-		for (var i = 1; i < chances.length; ++i){
-			chances[i] += chances[i-1];
-		}
-		console.log(chances);		
-		
+        generateChances();
         for (var i = 0; i < rows; ++i){
             for (var j = 0; j < columns; ++j){
                 map[i][j] = generateWithProbability(elements,chances);
@@ -123,10 +123,11 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
 
 /* usage example */
 
+/*
  var myGen = new GameLevel(['a','b','c','d','e'],5,5,1);
  myGen.generateLevel();
  myGen.replaceWithGenerated('b');
  var myLevel = myGen.getMap();
  console.log(myLevel);
  console.log(generateWithProbability(['a','b','c'],[10,50,40]));
- 
+ */
