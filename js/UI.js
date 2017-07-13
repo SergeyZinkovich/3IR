@@ -8,8 +8,6 @@ $(document).ready(function(){
     const BTN_WIN_TEXT = 'Continue';
     const BTN_LOOSE_TEXT = 'Retry';
 
-    const GAME_GRID_WIDTH = engine.getColumns();
-    const GAME_GRID_HEIGHT = engine.getRows();
     const CELL_SIZE = 64;
 
     const FALL_TIME = 500;
@@ -23,8 +21,8 @@ $(document).ready(function(){
     const DEBUG_TIME = 5000;
 
     var Game = function () { 
-		var that = this;
-		this.menu = $('#menu');
+        var that = this;
+        this.menu = $('#menu');
         this.initialize(false);
     };
 
@@ -48,6 +46,10 @@ $(document).ready(function(){
 
         this.level = engine.getPlayingField();
 
+        this.GAME_GRID_WIDTH = engine.getColumns();
+        this.GAME_GRID_HEIGHT = engine.getRows();
+        console.log(this.GAME_GRID_WIDTH);
+        console.log(this.GAME_GRID_HEIGHT);
         //create game grid
         this.statusBox = $('#gem-upgrade-box');
         this.requiredScore = engine.getScoreTask();
@@ -56,11 +58,11 @@ $(document).ready(function(){
         // this.levelEndTime = new Date().getTime() + DEBUG_TIME;
 
         $("#game").css({
-            'width': CELL_SIZE * GAME_GRID_WIDTH + 'px',
-            'height': CELL_SIZE * GAME_GRID_HEIGHT + 'px'
+            'width': CELL_SIZE * this.GAME_GRID_WIDTH + 'px',
+            'height': CELL_SIZE * this.GAME_GRID_HEIGHT + 'px'
         });
 
-        $('#gem-upgrade-box').css('width', CELL_SIZE * GAME_GRID_WIDTH + 'px');
+        $('#gem-upgrade-box').css('width', CELL_SIZE * this.GAME_GRID_WIDTH + 'px');
 
         this.createTimer();
         this.updateStatusBox();
@@ -74,8 +76,8 @@ $(document).ready(function(){
         this.level = engine.getPlayingField(); 
 		this.gameGrid.empty();
 
-        for (let i = 0; i < GAME_GRID_HEIGHT; ++i) {
-            for (let j = 0; j < GAME_GRID_WIDTH; ++j) {
+        for (let i = 0; i < this.GAME_GRID_HEIGHT; ++i) {
+            for (let j = 0; j < this.GAME_GRID_WIDTH; ++j) {
                 var id = i + '-' + j;
 				if (this.level[i][j] === '-1'){
 					var cell = $('<div id="' + id +'" class="game-cell"><img src="img/bomb.png"></div>');
@@ -97,8 +99,8 @@ $(document).ready(function(){
     Game.prototype.redrawGrid = function(){
         var that = this;
         console.log('redraw');
-        for (let i = 0; i < GAME_GRID_HEIGHT; ++i) {
-            for (let j = 0; j < GAME_GRID_WIDTH; ++j) {
+        for (let i = 0; i < this.GAME_GRID_HEIGHT; ++i) {
+            for (let j = 0; j < this.GAME_GRID_WIDTH; ++j) {
                 var id = i + '-' + j;
                 // this.gameGrid.find('#'+id+' img').attr('src', 'img/diamond-' + this.level[i][j] + '.png').removeClass('destroyed');
 				if (this.level[i][j] === '-1'){
