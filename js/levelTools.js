@@ -9,13 +9,10 @@ function randomInteger(min, max) {
     return rand;
 }
 
-function generateWithProbability(elems, chances){
-	for (var i = 1; i < chances.length; ++i){
-		chances[i] += chances[i-1];
-	}
+function generateWithProbability(elems, achances){
 	var p = randomInteger(1,100);
-	for (var i = 0; i < chances.length; ++i){
-		if (p < chances[i]) return elems[i];
+	for (var i = 0; i < achances.length; ++i){
+		if (p < achances[i]) return elems[i];
 	}
 	return elems[0];
 }
@@ -80,6 +77,10 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
 			chances[i] = 100/(chances.length);
 		}			
 		console.log(chances);
+		for (var i = 1; i < chances.length; ++i){
+			chances[i] += chances[i-1];
+		}
+		console.log(chances);		
 		
         for (var i = 0; i < rows; ++i){
             for (var j = 0; j < columns; ++j){
