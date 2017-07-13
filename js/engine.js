@@ -4,8 +4,9 @@ console.log('engine loaded');
 var Engine = function (){
 	
     this.turn = function(fromX, fromY, toX, toY){
-        gameLevel.swapElements(fromX, fromY, toX, toY);
-        playingField = gameLevel.getMap();
+		gameLevel.swapElements(fromX, fromY, toX, toY);
+		playingField = gameLevel.getMap();
+		console.log(playingField);
 		if (!this.canAnnihilate()){
 			gameLevel.swapElements(fromX, fromY, toX, toY);
 			playingField = gameLevel.getMap();
@@ -34,8 +35,9 @@ var Engine = function (){
 		for (let i = 0; i < playingField.length; i++){
 			beg = 0;
 			for (let j = 0; j < playingField[0].length; j++){
-				if ((playingField[i][j] !== playingField[i][beg]) || (j === playingField[0].length - 1)){
-					if (playingField[i][j] === playingField[i][beg]){j++;}
+				if (!((playingField[i][j] === playingField[i][j - 1]) || (playingField[i][j - 1] === "-1") || (playingField[i][j] === "-1")) || (j === playingField.length - 1)){
+					if ((j === playingField.length - 1) && ((playingField[i][j] === playingField[i][j - 1]) || 
+						((playingField[i][j - 1] === "-1") && (playingField[i][j] === playingField[i][j - 2])) || (playingField[i][j] === "-1"))){j++;}
 					if (j - beg > 2){
 						for (let h = beg; h < j; h++){
 							ans.push([i, h, playingField[i][h]]);
@@ -43,13 +45,15 @@ var Engine = function (){
 					}
 					beg = j;
 				}
+				if ((playingField[i][j - 1] === "-1") && (playingField[i][j] !== playingField[i][j - 2])){beg = j - 1;}
 			}
 		}
 		for (let i = 0; i < playingField[0].length; i++){
 			beg = 0;
 			for (let j = 0; j < playingField.length; j++){
-				if ((playingField[j][i] !== playingField[beg][i]) || (j === playingField.length - 1) || (playingField[j][i] === -1)){
-					if (playingField[j][i] === playingField[beg][i]){j++;}
+				if (!((j > 0 && playingField[j][i] === playingField[j - 1][i]) || (j > 0 && playingField[j - 1][i] === "-1") || (playingField[j][i] === "-1")) || (j === playingField.length - 1)){
+					if ((j === playingField.length - 1) && ((j > 0 && playingField[j][i] === playingField[j - 1][i]) || 
+						((j > 0 && playingField[j - 1][i] === "-1") && (j > 1 && playingField[j][i] === playingField[j - 2][i])) || (playingField[j][i] === "-1"))){j++;}
 					if (j - beg > 2){
 						for (let h = beg; h < j; h++){
 							ans.push([h, i, playingField[h][i]]);
@@ -57,16 +61,24 @@ var Engine = function (){
 					}
 					beg = j;
 				}
+				if ((j > 1 && j < playingField.length) && ((playingField[j - 1][i] === "-1") && (playingField[j][i] !== playingField[j - 2][i]))){beg = j - 1;}
 			}
 		}
 		for (let i = 0; i < ans.length; i++){
-			playingField[ans[i][0]][ans[i][1]] = -1;
+			playingField[ans[i][0]][ans[i][1]] = -3;
+			if (ans[i][2] === "-1"){
+				let arr = popBomb(ans[i][0], ans[i][1]);
+				for (let j = 0; j < arr.length; j++){
+					ans.push(arr[j]);
+				}
+			}
 		}
 		if (ans.length > 0){
 			updateScore(ans);
 			updateCollectedGems(ans);
-			gemFall(ans);
+			dropGems(ans);
 			doGen();
+			console.log(playingField);
 			return ans;
 		}
 		else{
@@ -74,10 +86,23 @@ var Engine = function (){
 		}
 	}
 	
+	function popBomb(a, b){
+		let ans = [];
+		for (let i = 0; i < playingField.length; i++){
+			ans.push([i, b, playingField[i][b]]);
+			playingField[i][b] = -3;
+		}
+		for (let i = 0; i < playingField[a].length; i++){
+			ans.push([a, i, playingField[a][i]]);
+			playingField[a][i] = -3;
+		}
+		return ans;
+	}
+	
 	function updateScore(arr){
 		if (gameStatus === 0){return;}
 		for (let i = 0; i < arr.length; i++){
-			score += 5 * Math.floor(arr[i][2] / gems.length + 1);
+			score += Math.floor(5 * (1 + Math.floor((arr[i][2] / gems.length) + 1) / 10));
 		}
 	}
 
@@ -86,8 +111,9 @@ var Engine = function (){
 		for (let i = 0; i < playingField.length; i++){
 			beg = 0;
 			for (let j = 0; j < playingField[0].length; j++){
-				if ((playingField[i][j] !== playingField[i][beg]) || (j === playingField[0].length - 1)){
-					if (playingField[i][j] === playingField[i][beg]){j++;}
+				if (!((playingField[i][j] === playingField[i][j - 1]) || (playingField[i][j - 1] === "-1") || (playingField[i][j] === "-1")) || (j === playingField.length - 1)){
+					if ((j === playingField.length - 1) && ((playingField[i][j] === playingField[i][j - 1]) || 
+						((playingField[i][j - 1] === "-1") && (playingField[i][j] === playingField[i][j - 2])) || (playingField[i][j] === "-1"))){j++;}
 					if (j - beg > 2){
 						return true;
 					}
@@ -95,13 +121,15 @@ var Engine = function (){
 						beg = j;
 					}
 				}
+				if ((playingField[i][j - 1] === "-1") && (playingField[i][j] !== playingField[i][j - 2])){beg = j - 1;}
 			}
 		}
 		for (let i = 0; i < playingField[0].length; i++){
 			beg = 0;
 			for (let j = 0; j < playingField.length; j++){
-				if ((playingField[j][i] !== playingField[beg][i]) || (j === playingField.length - 1)){
-					if (playingField[j][i] === playingField[beg][i]){j++;}
+				if (!((j > 0 && playingField[j][i] === playingField[j - 1][i]) || (j > 0 && playingField[j - 1][i] === "-1") || (playingField[j][i] === "-1")) || (j === playingField.length - 1)){
+					if ((j === playingField.length - 1) && ((j > 0 && playingField[j][i] === playingField[j - 1][i]) || 
+						((j > 0 && playingField[j - 1][i] === "-1") && (j > 1 && playingField[j][i] === playingField[j - 2][i])) || (playingField[j][i] === "-1"))){j++;}
 					if (j - beg > 2){
 						return true;
 					}
@@ -109,12 +137,13 @@ var Engine = function (){
 						beg = j;
 					}
 				}
+				if ((j > 1 && j < playingField.length) && ((playingField[j - 1][i] === "-1") && (playingField[j][i] !== playingField[j - 2][i]))){beg = j - 1;}
 			}
 		}
 		return false;
 	}
 
-	function gemFall(line){
+	function dropGems(line){
 		let buff;
 		for (let i = 0; i < line.length; i++){
 			let h = line[i][0];
@@ -128,8 +157,8 @@ var Engine = function (){
 		}
 	}
 
-	function doGen(){		
-		gameLevel.replaceWithGenerated(-1);
+	function doGen(){
+		gameLevel.replaceWithGenerated(-3);
         playingField = gameLevel.getMap();
 	}
 	
@@ -173,17 +202,74 @@ var Engine = function (){
 		return ans;
 	}
 	
-	var gameStatus = 0;
-	var score = 0;
-	var gems = [0, 1, 2, 3, 4];
-	var gemsCount = [0, 0, 0, 0, 0]; 
-	var gameLevel = new GameLevel(gems, 8, 8, 1);
-	gameLevel.generateLevel();
-	var playingField = gameLevel.getMap();
-	var gemsTasks = gameLevel.getUpgradeConditions();
-	console.log(gemsTasks);
-	annihilateAll.apply(this);
-	gameStatus = 1;
+	this.getTimeTask = function(){
+		return timeTask;
+	}
+	
+	this.getScoreTask = function(){
+		return scoreTask;
+	}
+
+    this.getRows = function () {
+        return rows;
+    }
+
+    this.getColumns = function () {
+        return columns;
+    }
+	
+	this.levelPassed = function(){
+		if (score >= scoreTask){
+			return true;	
+		}
+		else{
+			return false;
+		}
+	}
+	
+	this.getLevelNumber = function(){
+		return levelNumber;
+	}
+	
+	this.nextLevel = function(){
+		levelNumber++;
+		generateLevel.apply(this);
+	}
+	
+	this.replayLevel = function(){
+		generateLevel.apply(this);
+	}
+	
+	function generateLevel(){
+		gameStatus = 0;
+		score = 0;
+		gems = [0, 1, 2, 3, 4];
+		gemsCount = [0, 0, 0, 0, 0]; 
+		gameLevel = new GameLevel(gems, levelNumber);
+		gameLevel.generateLevel();
+		playingField = gameLevel.getMap();
+		gemsTasks = gameLevel.getUpgradeConditions();
+		timeTask = gameLevel.getPassTime();
+		scoreTask = gameLevel.getPassScore();
+        rows = gameLevel.getRows();
+        columns = gameLevel.getColumns();
+		annihilateAll.apply(this);
+		gameStatus = 1;
+	}
+	
+	var levelNumber = 1;
+	var gameStatus;
+	var score;
+	var gems;
+	var gemsCount; 
+	var gameLevel;
+	var playingField;
+	var gemsTasks;
+	var timeTask;
+	var scoreTask;
+	var rows;
+	var columns;
+	generateLevel.apply(this);
 }
 
 var engine = new Engine();

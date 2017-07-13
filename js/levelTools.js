@@ -9,33 +9,62 @@ function randomInteger(min, max) {
     return rand;
 }
 
-var GameLevel = function(aelements, arows, acolumns, difficulty){
+function generateWithProbability(elems, achances){
+	var p = randomInteger(1,100);
+	for (var i = 0; i < achances.length; ++i){
+		if (p < achances[i]) return elems[i];
+	}
+	return elems[0];
+}
+
+var GameLevel = function(aelements, difficulty){
 	var scoreCoeff = 5;
 	var numberOfElements = 5;
+	var bomb = '-1';
+	var numberOfLevels = 25;
+	var chances;
     var elements;
     var rows, columns;
     var map;
 	var passScore, passTime;
 	var upgradeConditions = new Array(aelements.length);
     setElements(aelements);
-    setSize(arows, acolumns);
+    setSize();
 
+	function generateBombs(){
+		var p = generateWithProbability([1,0],[20,80]);
+		if (p === 1){
+			map[Math.floor(randomInteger(0,rows-1))][Math.floor(randomInteger(0,columns-1))] = bomb;
+		}
+	}
+	
 	function setUpgradeConditions(){
 		for (var i = 0; i < elements.length; ++i){
 			if (upgradeConditions[i] === undefined){
-				upgradeConditions[i] = randomInteger(0,7)+(10*difficulty)+difficulty*randomInteger(0,difficulty);
+				upgradeConditions[i] = Math.floor(randomInteger(1,3)+(2*Math.max(Math.log(difficulty),1))*passTime/100);
 			}
 		}		
 	}
 	
     function setElements(aelements){
         elements = aelements;
-		setUpgradeConditions();
     }
 
-    function setSize(arows, acolumns){
-        rows = arows;
-        columns = acolumns;
+    function setSize(){
+        if (difficulty < 3){
+            rows = 6;
+        } else if (difficulty < 5){
+            rows = 8;
+        } else if (difficulty < 9){
+            rows = 9;
+        } else if (difficulty < 13){
+            rows = 10;
+        } else if (difficulty < 17){
+            rows = 11;
+        } else {
+            rows = 12;
+        }
+        columns = rows;
         map = new Array(rows);
         for (var i = 0; i < rows; ++i){
             map[i] = new Array(columns);
@@ -51,22 +80,42 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
         map[toX][toY] = buff;
     }
 
+    function generateChances() {
+        chances = new Array(elements.length);
+        chances[0] = 100 / (chances.length) + (numberOfLevels - difficulty) / 2;
+        chances[1] = 100 / (chances.length) + (numberOfLevels - difficulty) / 3;
+        for (var i = 2; i < chances.length; ++i) {
+            chances[i] = (100 - chances[0] - chances[1]) / (chances.length - 2);
+        }
+        for (var i = 1; i < chances.length; ++i) {
+            chances[i] += chances[i - 1];
+        }
+    }
+
     this.generateLevel = function(){
+        generateChances();
         for (var i = 0; i < rows; ++i){
             for (var j = 0; j < columns; ++j){
-                map[i][j] = elements[randomInteger(0,elements.length-1)];
+                map[i][j] = generateWithProbability(elements,chances);
             }
         }
+		passTime = Math.floor(randomInteger(20, 100));
+		passScore = Math.round(passTime*(4*Math.max(Math.log(difficulty),1)));
 		setUpgradeConditions();
-		passTime = randomInteger(20, 100);
-		passScore = passTime*(10*difficulty);
+		generateBombs();
     }
 
     this.replaceWithGenerated = function(elementForReplacing){
+        var p = generateWithProbability([1,0],[20,80]);
         for (var i = 0; i < map.length; ++i){
             for (var j = 0; j < map[i].length; ++j){
                 if (map[i][j] === elementForReplacing){
-                    map[i][j] = elements[randomInteger(0,elements.length-1)];
+                    if (p === 1){
+                        map[i][j] = bomb;
+                        p = 0;
+                        continue;
+                    }
+                    map[i][j] = generateWithProbability(elements,chances);
                 }
             }
         }
@@ -87,17 +136,23 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
     this.getMap = function(){
         return(map);
     }
+
+    this.getRows = function () {
+        return rows;
+    }
+
+    this.getColumns = function () {
+        return columns;
+    }
 }
 
 /* usage example */
+
 /*
- var myGen = new levelGenerator(['a','b','c'],5,5);
+ var myGen = new GameLevel(['a','b','c','d','e'],5,5,1);
  myGen.generateLevel();
+ myGen.replaceWithGenerated('b');
  var myLevel = myGen.getMap();
  console.log(myLevel);
-
- var myChanger = new levelChanger(myLevel, ['a','b','c']);
- myChanger.replaceWithGenerated('a');
- myLevel = myChanger.getMap();
- console.log(myLevel);
+ console.log(generateWithProbability(['a','b','c'],[10,50,40]));
  */

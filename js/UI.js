@@ -2,44 +2,89 @@
 
 $(document).ready(function(){
     console.log('UI loaded')
+    const WIN_TEXT = '<span>Level passed!</span> Continue?';
+    const LOOSE_TEXT = '<span>You lost!</span> Try again?';
 
-    const GAME_GRID_WIDTH = 8;
-    const GAME_GRID_HEIGHT = 8;
+    const BTN_WIN_TEXT = 'Continue';
+    const BTN_LOOSE_TEXT = 'Retry';
+
     const CELL_SIZE = 64;
 
     const FALL_TIME = 500;
     const SWAP_TIME = 400;
     const BOOM_TIME = 500;
+
+    const GAME_TIMEOUT  = 0;
+    const GAME_PLAYING = 1;
+    const GAME_END = 2;
+
+    const DEBUG_TIME = 5000;
+
     var Game = function () { 
-        //create game grid
-        this.isAnimationInProgress = false;
-        this.gameGrid = $('#game-grid');
-		this.level = engine.getPlayingField();
-        this.statusBox = $('#gem-upgrade-box');
-
-
-        $("#game-grid").css({
-            'width': CELL_SIZE * GAME_GRID_WIDTH + 'px',
-            'height': CELL_SIZE * GAME_GRID_HEIGHT + 'px'
-        });
-
-		$('#gem-upgrade-box').css('width', CELL_SIZE * GAME_GRID_WIDTH + 'px');
-
-        this.updateStatusBox();
-        this.updateLevel(false);
-		this.createGrid();
+        var that = this;
+        this.menu = $('#menu');
+        this.initialize(false);
     };
 
-	Game.prototype.createGrid = function(){
+    Game.prototype.initialize = function(isNext){
+        console.log('-----INIT---------')
+        this.gameState= GAME_PLAYING;
+
+        this.isAnimationInProgress = false;
+        this.gameGrid = $('#game-grid');
+        this.isDestructionInProgress = false;
+
+        if (!this.level) {
+            //nothing
+        }
+        else if(isNext) {
+            engine.nextLevel();
+        }
+        else {
+            engine.replayLevel();
+        }
+
+        this.level = engine.getPlayingField();
+
+        this.GAME_GRID_WIDTH = engine.getColumns();
+        this.GAME_GRID_HEIGHT = engine.getRows();
+        console.log(this.GAME_GRID_WIDTH);
+        console.log(this.GAME_GRID_HEIGHT);
+        //create game grid
+        this.statusBox = $('#gem-upgrade-box');
+        this.requiredScore = engine.getScoreTask();
+        this.timer = $("#timer");
+        this.levelEndTime = new Date().getTime() + engine.getTimeTask() * 1000;
+        // this.levelEndTime = new Date().getTime() + DEBUG_TIME;
+
+        $("#game").css({
+            'width': CELL_SIZE * this.GAME_GRID_WIDTH + 'px',
+            'height': CELL_SIZE * this.GAME_GRID_HEIGHT + 'px'
+        });
+
+        $('#gem-upgrade-box').css('width', CELL_SIZE * this.GAME_GRID_WIDTH + 'px');
+
+        this.createTimer();
+        this.updateStatusBox();
+        this.updateLevel(false);
+        this.createGrid();
+    };
+
+    Game.prototype.createGrid = function(){
 		var that = this;
 		console.log('draw');
         this.level = engine.getPlayingField(); 
 		this.gameGrid.empty();
 
-        for (let i = 0; i < GAME_GRID_HEIGHT; ++i) {
-            for (let j = 0; j < GAME_GRID_WIDTH; ++j) {
+        for (let i = 0; i < this.GAME_GRID_HEIGHT; ++i) {
+            for (let j = 0; j < this.GAME_GRID_WIDTH; ++j) {
                 var id = i + '-' + j;
-                var cell = $('<div id="' + id +'" class="game-cell"><img src="img/diamond-' + this.level[i][j] + '.png"></div>');
+				if (this.level[i][j] === '-1'){
+					var cell = $('<div id="' + id +'" class="game-cell"><img src="img/bomb.png"></div>');
+				}
+				else {
+					var cell = $('<div id="' + id +'" class="game-cell"><img src="img/diamond-' + this.level[i][j] + '.png"></div>');
+				}
 
                 cell.appendTo(this.gameGrid).click({game: this}, function(e) {
                     e.data.game.userClick($(this));
@@ -54,11 +99,16 @@ $(document).ready(function(){
     Game.prototype.redrawGrid = function(){
         var that = this;
         console.log('redraw');
-        for (let i = 0; i < GAME_GRID_HEIGHT; ++i) {
-            for (let j = 0; j < GAME_GRID_WIDTH; ++j) {
+        for (let i = 0; i < this.GAME_GRID_HEIGHT; ++i) {
+            for (let j = 0; j < this.GAME_GRID_WIDTH; ++j) {
                 var id = i + '-' + j;
                 // this.gameGrid.find('#'+id+' img').attr('src', 'img/diamond-' + this.level[i][j] + '.png').removeClass('destroyed');
-                this.gameGrid.find('#'+id).removeClass('destroyed').find('img').attr('src', 'img/diamond-' + this.level[i][j] + '.png')
+				if (this.level[i][j] === '-1'){
+					this.gameGrid.find('#'+id).removeClass('destroyed').find('img').attr('src', 'img/bomb.png')
+				}
+				else {
+					this.gameGrid.find('#'+id).removeClass('destroyed').find('img').attr('src', 'img/diamond-' + this.level[i][j] + '.png')
+				}
             }
         }
 
@@ -68,6 +118,7 @@ $(document).ready(function(){
             'top': 0,
             'left': 0},
             FALL_TIME, function() {
+            console.log('anim unlock');
             that.isAnimationInProgress = false;
         });
 
@@ -77,14 +128,24 @@ $(document).ready(function(){
 
     Game.prototype.updateLevel = function(destroyed){
         console.log('updating level');
-
         this.updateStatusBox();
         this.updateScore();
         this.animateDestruction(destroyed);
+
+        // if(engine.levelPassed()) {
+        //     this.gameState = GAME_END;
+        // }
+        if (!this.isAnimationInProgress) {
+            console.log('animation is not in progress');
+            if (this.gameState !== GAME_PLAYING || engine.levelPassed()) {
+                console.log('ending');
+                this.endGame();
+            }
+        }
     };
 
     Game.prototype.userClick = function(cell){
-        if (this.isAnimationInProgress) {
+        if (this.isAnimationInProgress || this.gameState !== GAME_PLAYING) {
             console.log('user click was blocked');
             return;
         }
@@ -139,26 +200,28 @@ $(document).ready(function(){
         }
 
         this.animateSwap(cell1, cell2, id1, id2);
-
         var nextDestroy = engine.turn(id1[0], id1[1], id2[0], id2[1],)
-        if (nextDestroy) {
-            setTimeout(function(nextDestr) {that.updateLevel(nextDestr);}, SWAP_TIME + 50, nextDestroy);
-            // setTimeout(that.updateLevel, SWAP_TIME + 50, nextDestroy); why not working?
+
+        if(!nextDestroy) {
+            setTimeout(function(cell1, cell2, id1, id2) {that.animateSwap(cell1, cell2, id1, id2);}, SWAP_TIME+50, cell1, cell2, id1, id2);
+            setTimeout(function(nextDestr) {that.updateLevel(nextDestr);}, SWAP_TIME + 100, nextDestroy);
         }
         else {
-            setTimeout(function(cell1, cell2, id1, id2) {that.animateSwap(cell1, cell2, id1, id2);}, SWAP_TIME + 50, cell1, cell2, id1, id2);
+            setTimeout(function(nextDestr) {that.updateLevel(nextDestr);}, SWAP_TIME+50, nextDestroy);
         }
 
     };
 
     Game.prototype.animateDestruction = function(gems){
         var that = this;
-        if(!gems)
+        if(!gems) {
             return;
-
+		}
+		
         gems.forEach(function(gem, index, array) {
             that.gameGrid.find('#'+gem[0]+'-'+gem[1]).addClass('destroyed');
         });
+
         that.isAnimationInProgress = true;
         setTimeout(function() {
             that.isAnimationInProgress = false;
@@ -204,9 +267,75 @@ $(document).ready(function(){
         });
     };
 
+    Game.prototype.createTimer = function(){
+        var that = this;
+        this.timerInterval = setInterval(function(){
+            var currTime = new Date().getTime();
+            var timeLeft = that.levelEndTime - currTime;
+            that.updateTimer(timeLeft >= 0 ? timeLeft : 0);
+            if (timeLeft < 0) {
+                clearInterval(that.timerInterval);
+                that.timeEnd();
+            }
+        }, 1000);
+        that.updateTimer(that.levelEndTime - new Date().getTime());
+    };
+
+    Game.prototype.updateTimer = function(time){
+        this.timer.text(Math.round(time/1000));
+    };
+    
+    Game.prototype.timeEnd = function(){
+        if(this.gameState === GAME_END) {
+            console.log('tiemend retutn');
+            return;
+        }
+        var that = this;
+        clearInterval(this.timerInterval);
+        console.log('time end');
+        that.gameState = GAME_TIMEOUT;
+        that.updateLevel();
+    };
+
+    Game.prototype.endGame = function(){
+        var that = this;
+        that.gameState = GAME_END;
+        clearInterval(this.timerInterval);
+        console.log('--------------end-------------');
+        that.showMenu(engine.levelPassed());
+    };
+    
+    Game.prototype.showMenu = function(isWin){
+        var that = this;
+        // this.menu.one('click', function() {
+        //     that.hideMenu();
+        //     that.initialize(true);
+        // });
+        var resultText = isWin ? WIN_TEXT : LOOSE_TEXT;
+        var btnText = isWin ? BTN_WIN_TEXT : BTN_LOOSE_TEXT; 
+
+        var resultDiv = $('<div id="result-text">' + resultText + '</div>');
+        var button = $('<button id="restart-btn">' + btnText + '</btn>');
+
+        resultDiv.addClass(isWin ? 'win' : 'loose');
+
+        $('#game-result').empty().append(resultDiv).append(button);
+        
+        this.menu.animate({top:'50%'}, 400);
+        $('#restart-btn').one('click', function(){
+            that.hideMenu();
+            that.initialize(isWin);
+        });
+    };
+	
+	Game.prototype.hideMenu = function(){
+		this.menu.animate({top:'-208px'}, 400);
+	};
+	
     Game.prototype.updateScore = function(){
-        $('#score-box').text(engine.getScore()+' Points');
+        $('#score-box').text(engine.getScore() + '/' + this.requiredScore + ' Pts. lvl №'+engine.getLevelNumber());
     };
 
     var game = new Game();
+
 });
