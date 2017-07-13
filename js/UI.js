@@ -14,14 +14,20 @@ $(document).ready(function(){
     const DEBUG_TIME = 5000;//sec
 
     var Game = function () { 
+		var that = this;
         this.initialize(false);
+		this.menu = $('#menu');
+		this.menu.click(function() {
+			that.hideMenu();
+			that.initialize(true);
+		});
     };
 
     Game.prototype.initialize = function(isGenerate){
         console.log('-----INIT---------')
         this.isAnimationInProgress = false;
         this.gameGrid = $('#game-grid');
-
+		this.isDestructionInProgress = false;
         if(isGenerate) {
             engine.generateLevel();
         }
@@ -37,7 +43,7 @@ $(document).ready(function(){
 
         console.log('req'+ this.requiredScore);
 
-        $("#game-grid").css({
+        $("#game").css({
             'width': CELL_SIZE * GAME_GRID_WIDTH + 'px',
             'height': CELL_SIZE * GAME_GRID_HEIGHT + 'px'
         });
@@ -102,7 +108,8 @@ $(document).ready(function(){
         this.updateScore();
         this.animateDestruction(destroyed);
 
-        if (engine.levelPassed() && this.isAnimationInProgress == false) {
+        if (engine.levelPassed() && !this.isDestructionInProgress) {
+			that.isAnimationInProgress = true;
             console.log('check');
             this.endGame(false);
             return;
@@ -180,9 +187,12 @@ $(document).ready(function(){
 
     Game.prototype.animateDestruction = function(gems){
         var that = this;
-        if(!gems)
+        if(!gems) {
+			that.isDestructionInProgress = false;
             return;
-
+		}
+		that.isDestructionInProgress = true;
+		
         gems.forEach(function(gem, index, array) {
             that.gameGrid.find('#'+gem[0]+'-'+gem[1]).addClass('destroyed');
         });
@@ -236,8 +246,9 @@ $(document).ready(function(){
         this.timerInterval = setInterval(function(){
             var currTime = new Date().getTime();
             var timeLeft = that.levelEndTime - currTime;
-            that.updateTimer(timeLeft);
-            if (timeLeft < 0) {
+            that.updateTimer(timeLeft >= 0 ? timeLeft : 0);
+            if (timeLeft < 0 && !that.isAnimationInProgress && !that.isDestructionInProgress) {
+				that.isAnimationInProgress = true;
                 clearInterval(that.timerInterval);
                 that.timeEnd();
             }
@@ -249,13 +260,13 @@ $(document).ready(function(){
         // this.timer.text(Math.round((this.levelEndTime - new Date().getTime())/1000));
         this.timer.text(Math.round(time/1000));
     };
-
+	
     Game.prototype.timeEnd = function(){
         console.log('time end');
         var that = this;
         clearInterval(this.timerInterval);
-        alert("you loose");
-        that.initialize(true);
+        that.showMenu();
+        //that.initialize(true);
         // console.log('time is out');
         // var waitAnimationInterval =  setInterval(function(handler){
         //     if(!that.isAnimationInProgress) {
@@ -268,7 +279,7 @@ $(document).ready(function(){
         // this = new Game();
     };
 
-    Game.prototype.endGame = function(isAnimationFinished){
+    Game.prototype.endGame = function(){
         var that = this;
         console.log('--------------end-------------');
         clearInterval(this.timerInterval);
@@ -299,6 +310,15 @@ $(document).ready(function(){
         //     that.initialize(true);
         // }
     };
+	
+	Game.prototype.showMenu = function(){
+		this.menu.animate({top:'50%'}, 400);
+	}
+	
+	Game.prototype.hideMenu = function(){
+		this.menu.animate({top:'-200px'}, 400);
+	}
+	
     Game.prototype.updateScore = function(){
         $('#score-box').text(engine.getScore() + '/' + this.requiredScore + ' Pts №'+engine.getLevelNumber());
     };

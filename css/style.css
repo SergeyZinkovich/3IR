@@ -6,13 +6,22 @@
     padding: 0;
 }
 
-#game-grid {
+#game {
+	position: relative;
     display: block;
     margin: 0 auto;
 	border: 4px double blue;
 	background:  #ffcc99;
     overflow: hidden;
 }
+
+/* #game-grid {
+    display: block;
+    margin: 0 auto;
+	border: 4px double blue;
+	background:  #ffcc99;
+    overflow: hidden;
+} */
 
 .game-cell {
     display: block;
@@ -117,4 +126,18 @@ body {
 
 #timer {
     /* display: block; */
+}
+
+#menu {
+	display: block;
+	position: absolute;
+ 	margin-left: -200px;
+	margin-top: -200px; 
+	background-color: white;
+	width: 400px;
+	height: 400px;
+ 	/*top:-400px;*/
+	top: -200px;
+	left:50%;
+	z-index: 2000;
 }
