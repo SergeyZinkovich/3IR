@@ -17,7 +17,7 @@ function generateWithProbability(elems, achances){
 	return elems[0];
 }
 
-var GameLevel = function(aelements, arows, acolumns, difficulty){
+var GameLevel = function(aelements, difficulty){
 	var scoreCoeff = 5;
 	var numberOfElements = 5;
 	var bomb = '-1';
@@ -29,7 +29,7 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
 	var passScore, passTime;
 	var upgradeConditions = new Array(aelements.length);
     setElements(aelements);
-    setSize(arows, acolumns);
+    setSize();
 
 	function generateBombs(){
 		var p = generateWithProbability([1,0],[20,80]);
@@ -50,9 +50,21 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
         elements = aelements;
     }
 
-    function setSize(arows, acolumns){
-        rows = arows;
-        columns = acolumns;
+    function setSize(){
+        if (difficulty < 3){
+            rows = 6;
+        } else if (difficulty < 5){
+            rows = 8;
+        } else if (difficulty < 9){
+            rows = 9;
+        } else if (difficulty < 13){
+            rows = 10;
+        } else if (difficulty < 17){
+            rows = 11;
+        } else {
+            rows = 12;
+        }
+        columns = rows;
         map = new Array(rows);
         for (var i = 0; i < rows; ++i){
             map[i] = new Array(columns);
@@ -123,6 +135,14 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
 
     this.getMap = function(){
         return(map);
+    }
+
+    this.getRows = function () {
+        return rows;
+    }
+
+    this.getColumns = function () {
+        return columns;
     }
 }
 

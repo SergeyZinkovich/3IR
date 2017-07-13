@@ -8,8 +8,8 @@ $(document).ready(function(){
     const BTN_WIN_TEXT = 'Continue';
     const BTN_LOOSE_TEXT = 'Retry';
 
-    const GAME_GRID_WIDTH = 8;
-    const GAME_GRID_HEIGHT = 8;
+    const GAME_GRID_WIDTH = engine.getColumns();
+    const GAME_GRID_HEIGHT = engine.getRows();
     const CELL_SIZE = 64;
 
     const FALL_TIME = 500;

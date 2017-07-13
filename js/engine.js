@@ -209,6 +209,14 @@ var Engine = function (){
 	this.getScoreTask = function(){
 		return scoreTask;
 	}
+
+    this.getRows = function () {
+        return rows;
+    }
+
+    this.getColumns = function () {
+        return columns;
+    }
 	
 	this.levelPassed = function(){
 		if (score >= scoreTask){
@@ -237,12 +245,14 @@ var Engine = function (){
 		score = 0;
 		gems = [0, 1, 2, 3, 4];
 		gemsCount = [0, 0, 0, 0, 0]; 
-		gameLevel = new GameLevel(gems, 8, 8, levelNumber);
+		gameLevel = new GameLevel(gems, levelNumber);
 		gameLevel.generateLevel();
 		playingField = gameLevel.getMap();
 		gemsTasks = gameLevel.getUpgradeConditions();
 		timeTask = gameLevel.getPassTime();
 		scoreTask = gameLevel.getPassScore();
+        rows = gameLevel.getRows();
+        columns = gameLevel.getColumns();
 		annihilateAll.apply(this);
 		gameStatus = 1;
 	}
@@ -257,6 +267,8 @@ var Engine = function (){
 	var gemsTasks;
 	var timeTask;
 	var scoreTask;
+	var rows;
+	var columns;
 	generateLevel.apply(this);
 }
 
