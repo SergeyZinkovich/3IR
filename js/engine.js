@@ -77,7 +77,7 @@ var Engine = function (){
 	function updateScore(arr){
 		if (gameStatus === 0){return;}
 		for (let i = 0; i < arr.length; i++){
-			score += 5 * Math.floor(arr[i][2] / gems.length + 1);
+			score += Math.floor(5 * (1 + Math.floor((arr[i][2] / gems.length) + 1) / 10));
 		}
 	}
 
