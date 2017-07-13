@@ -66,7 +66,12 @@ $(document).ready(function(){
         for (let i = 0; i < GAME_GRID_HEIGHT; ++i) {
             for (let j = 0; j < GAME_GRID_WIDTH; ++j) {
                 var id = i + '-' + j;
-                var cell = $('<div id="' + id +'" class="game-cell"><img src="img/diamond-' + this.level[i][j] + '.png"></div>');
+				if (this.level[i][j] === '-1'){
+					var cell = $('<div id="' + id +'" class="game-cell"><img src="img/bomb.png"></div>');
+				}
+				else {
+					var cell = $('<div id="' + id +'" class="game-cell"><img src="img/diamond-' + this.level[i][j] + '.png"></div>');
+				}
 
                 cell.appendTo(this.gameGrid).click({game: this}, function(e) {
                     e.data.game.userClick($(this));
@@ -85,7 +90,12 @@ $(document).ready(function(){
             for (let j = 0; j < GAME_GRID_WIDTH; ++j) {
                 var id = i + '-' + j;
                 // this.gameGrid.find('#'+id+' img').attr('src', 'img/diamond-' + this.level[i][j] + '.png').removeClass('destroyed');
-                this.gameGrid.find('#'+id).removeClass('destroyed').find('img').attr('src', 'img/diamond-' + this.level[i][j] + '.png')
+				if (this.level[i][j] === '-1'){
+					this.gameGrid.find('#'+id).removeClass('destroyed').find('img').attr('src', 'img/bomb.png')
+				}
+				else {
+					this.gameGrid.find('#'+id).removeClass('destroyed').find('img').attr('src', 'img/diamond-' + this.level[i][j] + '.png')
+				}
             }
         }
 
