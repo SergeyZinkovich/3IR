@@ -11,7 +11,7 @@ $(document).ready(function(){
     const SWAP_TIME = 400;
     const BOOM_TIME = 500;
 
-    const DEBUG_TIME = 5;//sec
+    const DEBUG_TIME = 5000;//sec
 
     var Game = function () { 
         this.initialize(false);
@@ -236,14 +236,13 @@ $(document).ready(function(){
         this.timerInterval = setInterval(function(){
             var currTime = new Date().getTime();
             var timeLeft = that.levelEndTime - currTime;
+            that.updateTimer(timeLeft);
             if (timeLeft < 0) {
                 clearInterval(that.timerInterval);
                 that.timeEnd();
             }
-            else {
-                that.updateTimer(timeLeft);
-            }
         }, 1000);
+		that.updateTimer(that.levelEndTime - new Date().getTime());
     };
 
     Game.prototype.updateTimer = function(time){
@@ -256,7 +255,7 @@ $(document).ready(function(){
         var that = this;
         clearInterval(this.timerInterval);
         alert("you loose");
-        that.initialize(true);
+        //that.initialize(true);
         // console.log('time is out');
         // var waitAnimationInterval =  setInterval(function(handler){
         //     if(!that.isAnimationInProgress) {
