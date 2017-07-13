@@ -23,14 +23,13 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
 	function setUpgradeConditions(){
 		for (var i = 0; i < elements.length; ++i){
 			if (upgradeConditions[i] === undefined){
-				upgradeConditions[i] = randomInteger(0,7)+(10*difficulty)+difficulty*randomInteger(0,difficulty);
+				upgradeConditions[i] = Math.floor(randomInteger(1,3)+(6*Math.max(Math.log(difficulty),1))*passTime/100);
 			}
 		}		
 	}
 	
     function setElements(aelements){
         elements = aelements;
-		setUpgradeConditions();
     }
 
     function setSize(arows, acolumns){
@@ -57,9 +56,9 @@ var GameLevel = function(aelements, arows, acolumns, difficulty){
                 map[i][j] = elements[randomInteger(0,elements.length-1)];
             }
         }
+		passTime = Math.floor(randomInteger(20, 100));
+		passScore = Math.round(passTime*(4*Math.max(Math.log(difficulty),1)));
 		setUpgradeConditions();
-		passTime = randomInteger(20, 100);
-		passScore = passTime*(10*difficulty);
     }
 
     this.replaceWithGenerated = function(elementForReplacing){
