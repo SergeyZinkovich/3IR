@@ -40,7 +40,7 @@ var Engine = function (){
 				if (j > 0){
 					gameLevel.swap(i, j, i, j - 1);
 					if (canAnnihilate()){return [[i, j], [i, j - 1]];}
-					gameLevel.swap(i, j, i, j -1 1);
+					gameLevel.swap(i, j, i, j -1);
 				}
 				if (i < playingField.length - 1){
 					gameLevel.swap(i, j, i + 1, j);
