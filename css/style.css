@@ -49,7 +49,7 @@
     background: url('../img/boom.png'); */
 }
 
-.destroyed img{
+.destroyed img {
     /* display: none; */
     transform: scale(0.1);
     transition: transform 1s;
@@ -94,9 +94,9 @@ body {
     /* background-color: #0C0C0C; */
 }
 
-#level-status div {
+/* #level-status div {
     display: inline-block;
-}
+} */
 
 #gem-upgrade-box {
     font-size: 36px;
@@ -126,8 +126,18 @@ body {
     margin-right: 20px;
 }
 
-#timer {
-    /* display: block; */
+#progress {
+    margin: 0 auto;
+    display: block;
+    height: 20px;
+    border: 4px double blue;
+}
+
+#bar {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background-color: #91d3ff;
 }
 
 #menu {

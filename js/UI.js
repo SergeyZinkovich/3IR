@@ -53,7 +53,7 @@ $(document).ready(function(){
         //create game grid
         this.statusBox = $('#gem-upgrade-box');
         this.requiredScore = engine.getScoreTask();
-        this.timer = $("#timer");
+        this.timer = $("#progress");
         this.levelEndTime = new Date().getTime() + engine.getTimeTask() * 1000;
         // this.levelEndTime = new Date().getTime() + DEBUG_TIME;
 
@@ -62,8 +62,10 @@ $(document).ready(function(){
             'height': CELL_SIZE * this.GAME_GRID_HEIGHT + 'px'
         });
 
-        $('#gem-upgrade-box').css('width', CELL_SIZE * this.GAME_GRID_WIDTH + 'px');
+        $(this.timer).css('width', CELL_SIZE * this.GAME_GRID_WIDTH + 'px');
 
+        $('#gem-upgrade-box').css('width', CELL_SIZE * this.GAME_GRID_WIDTH + 'px');
+        console.log('time: ' + (this.levelEndTime - new Date().getTime()));
         this.createTimer();
         this.updateStatusBox();
         this.updateScore();
@@ -273,20 +275,24 @@ $(document).ready(function(){
 
     Game.prototype.createTimer = function(){
         var that = this;
-        this.timerInterval = setInterval(function(){
-            var currTime = new Date().getTime();
-            var timeLeft = that.levelEndTime - currTime;
-            that.updateTimer(timeLeft >= 0 ? timeLeft : 0);
-            if (timeLeft < 0) {
-                clearInterval(that.timerInterval);
-                that.timeEnd();
-            }
-        }, 1000);
-        that.updateTimer(that.levelEndTime - new Date().getTime());
-    };
 
-    Game.prototype.updateTimer = function(time){
-        this.timer.text(Math.round(time/1000));
+        var bar = this.timer.find('#bar').css('width', '100%').animate({
+            'width': '0px'},
+            that.levelEndTime - new Date().getTime(), 'linear', function() {
+                that.timeEnd();
+        });
+
+        // var that = this;
+        // this.timerInterval = setInterval(function(){
+        //     var currTime = new Date().getTime();
+        //     var timeLeft = that.levelEndTime - currTime;
+        //     that.updateTimer(timeLeft >= 0 ? timeLeft : 0);
+        //     if (timeLeft < 0) {
+        //         clearInterval(that.timerInterval);
+        //         that.timeEnd();
+        //     }
+        // }, 1000);
+        // that.updateTimer(that.levelEndTime - new Date().getTime());
     };
     
     Game.prototype.timeEnd = function(){
