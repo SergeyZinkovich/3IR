@@ -28,6 +28,34 @@ var Engine = function (){
 	this.getScore = function(){
 		return score;
 	}
+	
+	this.help = function(){
+		for (let i = 0; i < playingField.length; i++){
+			for (let j = 0; j < playingField[0].length; j++){
+				if (j < playingField[0].length - 1){
+					gameLevel.swap(i, j, i, j + 1);
+					if (canAnnihilate()){return [[i, j], [i, j + 1]];}
+					gameLevel.swap(i, j, i, j + 1);
+				}
+				if (j > 0){
+					gameLevel.swap(i, j, i, j - 1);
+					if (canAnnihilate()){return [[i, j], [i, j - 1]];}
+					gameLevel.swap(i, j, i, j -1 1);
+				}
+				if (i < playingField.length - 1){
+					gameLevel.swap(i, j, i + 1, j);
+					if (canAnnihilate()){return [[i, j], [i + 1, j]];}
+					gameLevel.swap(i, j, i + 1, j);
+				}
+				if (i > 0){
+					gameLevel.swap(i, j, i - 1, j);
+					if (canAnnihilate()){return [[i, j], [i - 1, j]];}
+					gameLevel.swap(i, j, i - 1, j);
+				}
+			}
+		}
+		return false;
+	}
 
 	this.annihilate = function(){
 		let beg;
