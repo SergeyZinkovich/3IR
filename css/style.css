@@ -40,10 +40,30 @@
 }
 
 #game-grid img {
-    position: absolute;
-    margin: auto;
+    position:absolute;
     z-index: 100;
 }
+
+.bombed {
+    /* background-color: black; */
+   /*  background: url('../img/boom.png'); */
+}
+
+.bombed img {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: 0;  
+    bottom: 0;  
+    left: 0;  
+    right: 0;  
+    margin: auto;
+
+    transform: scale(6);
+    transition: transform 0.5s;
+    display: block;
+   
+} 
 
 .destroyed {
 /*     background-color: black;
@@ -51,6 +71,7 @@
 }
 
 .destroyed img {
+
     /* display: none; */
     transform: scale(0.1);
     transition: transform 1s;

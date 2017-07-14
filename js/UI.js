@@ -12,7 +12,7 @@ $(document).ready(function(){
 
     const FALL_TIME = 500;
     const SWAP_TIME = 400;
-    const BOOM_TIME = 400;
+    const BOOM_TIME = 500;
 
     const GAME_TIMEOUT  = 0;
     const GAME_PLAYING = 1;
@@ -135,10 +135,10 @@ $(document).ready(function(){
                 var id = i + '-' + j;
                 // this.gameGrid.find('#'+id+' img').attr('src', 'img/diamond-' + this.level[i][j] + '.png').removeClass('destroyed');
                 if (this.level[i][j] === '-1'){
-                    this.gameGrid.find('#'+id).removeClass('destroyed').find('img').attr('src', 'img/bomb.png')
+                    this.gameGrid.find('#'+id).removeClass('destroyed').removeClass('bombed').find('img').attr('src', 'img/bomb.png')
                 }
                 else {
-                    this.gameGrid.find('#'+id).removeClass('destroyed').find('img').attr('src', 'img/diamond-' + this.level[i][j] + '.png')
+                    this.gameGrid.find('#'+id).removeClass('destroyed').removeClass('bombed').find('img').attr('src', 'img/diamond-' + this.level[i][j] + '.png')
                 }
             }
         }
@@ -279,7 +279,12 @@ $(document).ready(function(){
 		
         // that.isDestructionInProgress = true;
         gems.forEach(function(gem, index, array) {
-            that.gameGrid.find('#'+gem[0]+'-'+gem[1]).addClass('destroyed');
+            if (gem[2] === '-1') {
+                that.gameGrid.find('#'+gem[0]+'-'+gem[1]).removeClass('destroyed').addClass('bombed').find('img').attr('src', 'img/boom.png');
+            }
+            else {
+               that.gameGrid.find('#'+gem[0]+'-'+gem[1]).addClass('destroyed');
+            }
         });
 
         that.boomTimeOut =  setTimeout(function() {
@@ -297,7 +302,7 @@ $(document).ready(function(){
             let destCount = 0;
             for (var i = that.level.length - 1; i >= 0; --i) {
                 let gemImg = $('#' + i + '-' + j);
-                if (gemImg.hasClass('destroyed')) {
+                if (gemImg.hasClass('destroyed') || gemImg.hasClass('bombed')) {
                     destCount++;
                 }
                 if(destCount > 0) {
