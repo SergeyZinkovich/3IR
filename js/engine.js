@@ -6,7 +6,6 @@ var Engine = function (){
     this.turn = function(fromX, fromY, toX, toY){
 		gameLevel.swapElements(fromX, fromY, toX, toY);
 		playingField = gameLevel.getMap();
-		console.log(playingField);
 		if (!this.canAnnihilate()){
 			gameLevel.swapElements(fromX, fromY, toX, toY);
 			playingField = gameLevel.getMap();
@@ -63,9 +62,8 @@ var Engine = function (){
 		for (let i = 0; i < playingField.length; i++){
 			beg = 0;
 			for (let j = 0; j < playingField[0].length; j++){
-				if (!((playingField[i][j] === playingField[i][j - 1]) || (playingField[i][j - 1] === "-1") || (playingField[i][j] === "-1")) || (j === playingField.length - 1)){
-					if ((j === playingField.length - 1) && ((playingField[i][j] === playingField[i][j - 1]) || 
-						((playingField[i][j - 1] === "-1") && (playingField[i][j] === playingField[i][j - 2])) || (playingField[i][j] === "-1"))){j++;}
+				if ((playingField[i][j] !== playingField[i][beg]) || (j === playingField[0].length - 1) || (playingField[i][j] === "-1")){
+					if (playingField[i][j] === playingField[i][beg]){j++;}
 					if (j - beg > 2){
 						for (let h = beg; h < j; h++){
 							ans.push([i, h, playingField[i][h]]);
@@ -73,15 +71,13 @@ var Engine = function (){
 					}
 					beg = j;
 				}
-				if ((playingField[i][j - 1] === "-1") && (playingField[i][j] !== playingField[i][j - 2])){beg = j - 1;}
 			}
 		}
 		for (let i = 0; i < playingField[0].length; i++){
 			beg = 0;
 			for (let j = 0; j < playingField.length; j++){
-				if (!((j > 0 && playingField[j][i] === playingField[j - 1][i]) || (j > 0 && playingField[j - 1][i] === "-1") || (playingField[j][i] === "-1")) || (j === playingField.length - 1)){
-					if ((j === playingField.length - 1) && ((j > 0 && playingField[j][i] === playingField[j - 1][i]) || 
-						((j > 0 && playingField[j - 1][i] === "-1") && (j > 1 && playingField[j][i] === playingField[j - 2][i])) || (playingField[j][i] === "-1"))){j++;}
+				if ((playingField[j][i] !== playingField[beg][i]) || (j === playingField.length - 1) || (playingField[j][i] === "-1")){
+					if (playingField[j][i] === playingField[beg][i]){j++;}
 					if (j - beg > 2){
 						for (let h = beg; h < j; h++){
 							ans.push([h, i, playingField[h][i]]);
@@ -89,24 +85,21 @@ var Engine = function (){
 					}
 					beg = j;
 				}
-				if ((j > 1 && j < playingField.length) && ((playingField[j - 1][i] === "-1") && (playingField[j][i] !== playingField[j - 2][i]))){beg = j - 1;}
 			}
 		}
 		for (let i = 0; i < ans.length; i++){
 			playingField[ans[i][0]][ans[i][1]] = -3;
-			if (ans[i][2] === "-1"){
-				let arr = popBomb(ans[i][0], ans[i][1]);
-				for (let j = 0; j < arr.length; j++){
-					ans.push(arr[j]);
-				}
-			}
+		}
+		let arr = triggerBombs();
+		for (let i = 0; i < arr.length; i++){
+			ans.push(arr[i]);
 		}
 		if (ans.length > 0){
 			updateScore(ans);
 			updateCollectedGems(ans);
 			dropGems(ans);
 			doGen();
-			console.log(playingField);
+			console.log(ans);
 			return ans;
 		}
 		else{
@@ -114,16 +107,39 @@ var Engine = function (){
 		}
 	}
 	
-	function popBomb(a, b){
+	function triggerBombs(){
 		let ans = [];
+		let buff = [];
 		for (let i = 0; i < playingField.length; i++){
-			ans.push([i, b, playingField[i][b]]);
-			playingField[i][b] = -3;
+			for (let j = 0; j < playingField[i].length; j++){
+				if (playingField[i][j] === "-1"){
+					if (((j > 2) && (playingField[i][j - 1] === -3) && (playingField[i][j - 2] === -3) && (playingField[i][j - 3] === -3)) ||
+						((j < playingField[i].length - 3) && (playingField[i][j + 1] === -3) && (playingField[i][j + 2] === -3) && (playingField[i][j + 3] === -3)) || 
+							((i > 2) && (playingField[i - 1][j] === -3) && (playingField[i - 2][j] === -3) && (playingField[i - 3][j] === -3)) ||
+								((i < playingField.length - 3) && (playingField[i + 1][j] === -3) && (playingField[i + 2][j] === -3) && (playingField[i + 3][j] === -3))){
+									buff = explodeBomb(i, j);
+					}
+				}
+				for (let h = 0; h < buff.length; h++){
+					ans.push(buff[h]);
+				}
+			}
 		}
-		for (let i = 0; i < playingField[a].length; i++){
-			ans.push([a, i, playingField[a][i]]);
-			playingField[a][i] = -3;
+		return ans;
+	}
+	
+	function explodeBomb(a, b){
+		let ans = [];
+		for (let i = a - 1; i < a + 2; i++){
+			for (let j = b - 1; j < b + 2; j++){
+				if ((i < 0) || (j < 0) || (i >= playingField.length) || (j >= playingField[0].length)){
+					continue;
+				}
+				ans.push([i, j, playingField[i][j]]);
+				playingField[i][j] = -3;
+			}
 		}
+		console.log(ans);
 		return ans;
 	}
 	
@@ -139,9 +155,8 @@ var Engine = function (){
 		for (let i = 0; i < playingField.length; i++){
 			beg = 0;
 			for (let j = 0; j < playingField[0].length; j++){
-				if (!((playingField[i][j] === playingField[i][j - 1]) || (playingField[i][j - 1] === "-1") || (playingField[i][j] === "-1")) || (j === playingField.length - 1)){
-					if ((j === playingField.length - 1) && ((playingField[i][j] === playingField[i][j - 1]) || 
-						((playingField[i][j - 1] === "-1") && (playingField[i][j] === playingField[i][j - 2])) || (playingField[i][j] === "-1"))){j++;}
+				if ((playingField[i][j] !== playingField[i][beg]) || (j === playingField[0].length - 1) || (playingField[i][j] === "-1")){
+					if (playingField[i][j] === playingField[i][beg]){j++;}
 					if (j - beg > 2){
 						return true;
 					}
@@ -149,15 +164,13 @@ var Engine = function (){
 						beg = j;
 					}
 				}
-				if ((playingField[i][j - 1] === "-1") && (playingField[i][j] !== playingField[i][j - 2])){beg = j - 1;}
 			}
 		}
 		for (let i = 0; i < playingField[0].length; i++){
 			beg = 0;
 			for (let j = 0; j < playingField.length; j++){
-				if (!((j > 0 && playingField[j][i] === playingField[j - 1][i]) || (j > 0 && playingField[j - 1][i] === "-1") || (playingField[j][i] === "-1")) || (j === playingField.length - 1)){
-					if ((j === playingField.length - 1) && ((j > 0 && playingField[j][i] === playingField[j - 1][i]) || 
-						((j > 0 && playingField[j - 1][i] === "-1") && (j > 1 && playingField[j][i] === playingField[j - 2][i])) || (playingField[j][i] === "-1"))){j++;}
+				if ((playingField[j][i] !== playingField[beg][i]) || (j === playingField.length - 1) || (playingField[j][i] === "-1")){
+					if (playingField[j][i] === playingField[beg][i]){j++;}
 					if (j - beg > 2){
 						return true;
 					}
@@ -165,7 +178,6 @@ var Engine = function (){
 						beg = j;
 					}
 				}
-				if ((j > 1 && j < playingField.length) && ((playingField[j - 1][i] === "-1") && (playingField[j][i] !== playingField[j - 2][i]))){beg = j - 1;}
 			}
 		}
 		return false;
@@ -176,7 +188,7 @@ var Engine = function (){
 		for (let i = 0; i < line.length; i++){
 			let h = line[i][0];
 			let k = line[i][1];
-			while ((h > 0) && (playingField[h - 1][k] !== -1)){
+			while ((h > 0) && (playingField[h - 1][k] !== -3)){
 				buff = playingField[h - 1][k];
 				playingField[h - 1][k] = playingField[h][k];
 				playingField[h][k] = buff;
