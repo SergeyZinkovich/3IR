@@ -233,3 +233,9 @@ body {
 #help:hover {
   background: #3cb0fd;
   text-decoration: none;
+}
+
+.preload {
+    display: none;
+    visibility: hidden;
+}
