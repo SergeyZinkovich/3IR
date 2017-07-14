@@ -139,7 +139,7 @@ var Engine = function (){
 				if ((i < 0) || (j < 0) || (i >= playingField.length) || (j >= playingField[0].length)){
 					continue;
 				}
-				ans.push([i, j, "-1");
+				ans.push([i, j, "-1"]);
 				playingField[i][j] = -3;
 			}
 		}
