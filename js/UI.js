@@ -12,7 +12,7 @@ $(document).ready(function(){
 
     const FALL_TIME = 500;
     const SWAP_TIME = 400;
-    const BOOM_TIME = 5000;
+    const BOOM_TIME = 400;
 
     const GAME_TIMEOUT  = 0;
     const GAME_PLAYING = 1;
