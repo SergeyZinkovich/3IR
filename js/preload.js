@@ -1,6 +1,7 @@
-$(document).ready(function() {
-    var preload = $('.preload');
+"use strict"
+$(window).on("load", function(){
 
+    var preload = $('.preload');
     for (let i=0; i <= 24; ++i) {
         preload.append('<img src="img/diamond-'+i+'.png">');
     }
