@@ -99,7 +99,6 @@ var Engine = function (){
 			updateCollectedGems(ans);
 			dropGems(ans);
 			doGen();
-			console.log(ans);
 			return ans;
 		}
 		else{
@@ -109,9 +108,10 @@ var Engine = function (){
 	
 	function triggerBombs(){
 		let ans = [];
-		let buff = [];
+		let buff;
 		for (let i = 0; i < playingField.length; i++){
 			for (let j = 0; j < playingField[i].length; j++){
+				buff = [];
 				if (playingField[i][j] === "-1"){
 					if (((j > 2) && (playingField[i][j - 1] === -3) && (playingField[i][j - 2] === -3) && (playingField[i][j - 3] === -3)) ||
 						((j < playingField[i].length - 3) && (playingField[i][j + 1] === -3) && (playingField[i][j + 2] === -3) && (playingField[i][j + 3] === -3)) || 
@@ -139,7 +139,6 @@ var Engine = function (){
 				playingField[i][j] = -3;
 			}
 		}
-		console.log(ans);
 		return ans;
 	}
 	
@@ -147,6 +146,7 @@ var Engine = function (){
 		if (gameStatus === 0){return;}
 		for (let i = 0; i < arr.length; i++){
 			score += Math.floor(5 * (1 + Math.floor((arr[i][2] / gems.length) + 1) / 10));
+			console.log(score);
 		}
 	}
 
