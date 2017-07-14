@@ -1,6 +1,6 @@
 "use strict"
 
-$(document).ready(function(){
+$(window).on("load", function(){
     console.log('UI loaded')
     const WIN_TEXT = '<span>Level passed!</span>';
     const LOOSE_TEXT = '<span>You lost!</span>';
