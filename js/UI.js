@@ -390,6 +390,7 @@ $(window).on("load", function(){
         $('#score-box').text(engine.getScore() + '/' + this.requiredScore + ' lvl №'+engine.getLevelNumber());
     };
 
+
     var game = new Game();
 
 });

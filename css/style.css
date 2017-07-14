@@ -239,3 +239,27 @@ body {
     display: none;
     visibility: hidden;
 }
+
+#play-music {
+    position: fixed;
+    top: 0;
+    left: 0;
+    -webkit-border-radius: 60;
+    -moz-border-radius: 60;
+    border-radius: 60px;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 20px;
+    background: #821199;
+    padding: 20px 20px 21px 20px;
+    text-decoration: none;
+}
+
+#play-music:hover {
+    background: #ac09ed;
+    text-decoration: none;
+}
+
+#play-music:focus {
+    outline:0;
+}
