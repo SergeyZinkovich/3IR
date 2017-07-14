@@ -113,6 +113,7 @@ $(document).ready(function(){
             }
         }
 
+        that.updateStatusBox();
         console.log('anim lock');
         this.isAnimationInProgress = true;
         this.gameGrid.find('img').animate({
@@ -121,7 +122,6 @@ $(document).ready(function(){
             FALL_TIME, function() {
             console.log('anim unlock');
             that.isAnimationInProgress = false;
-            that.updateStatusBox();
             that.updateLevel(engine.annihilate());
         });
     }
@@ -130,7 +130,6 @@ $(document).ready(function(){
     Game.prototype.updateLevel = function(destroyed){
         console.log('updating level');
         this.updateScore();
-        this.updateStatusBox();
         if (this.gameState === GAME_END) {
             console.log('updateBlocked');
             return;
