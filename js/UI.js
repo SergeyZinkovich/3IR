@@ -278,8 +278,10 @@ $(window).on("load", function(){
 		}
 		
         // that.isDestructionInProgress = true;
+        var isBomb = false;
         gems.forEach(function(gem, index, array) {
             if (gem[2] === '-1') {
+                isBomb = true;
                 that.gameGrid.find('#'+gem[0]+'-'+gem[1]).removeClass('destroyed').addClass('bombed').find('img').attr('src', 'img/boom.png');
             }
             else {
@@ -287,6 +289,12 @@ $(window).on("load", function(){
             }
         });
 
+        if (isBomb) {
+            music.playBomb();
+        }
+        else {
+            music.playPop();
+        }
         that.boomTimeOut =  setTimeout(function() {
             that.destroyGems();
         }, BOOM_TIME);
@@ -391,6 +399,38 @@ $(window).on("load", function(){
     };
 
 
+
+    var Music = function() {
+        this.bg = $('#music');
+        this.pop = $("#pop");
+        this.bomb = $("#bomb");
+
+        this.bg.prop('volume', 0.05);
+        this.pop.prop('volume',0.5);
+        this.bomb.prop('volume', 0.5);
+        
+        $('#play-music').click(function() {
+            if(bg.prop("paused")) {
+                bg.trigger('play');
+            }
+            else {
+                bg.trigger("pause");
+            }
+        });
+
+    };
+
+    Music.prototype.playBomb = function(){
+        console.log('bomb.mp3');
+        this.bomb.trigger('play');
+    };
+
+    Music.prototype.playPop = function(){
+        console.log('pop.mp3');
+        this.pop.trigger('play');
+    };
+
+    var music = new Music();
     var game = new Game();
 
 });
