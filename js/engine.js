@@ -155,7 +155,6 @@ var Engine = function (){
 		if (gameStatus === 0){return;}
 		for (let i = 0; i < arr.length; i++){
 			score += Math.floor(5 * (1 + Math.floor((arr[i][2] / gems.length) + 1) / 10));
-			console.log(score);
 		}
 	}
 
@@ -206,7 +205,6 @@ var Engine = function (){
 
 	function doGen(generateBombs){
 		gameLevel.replaceWithGenerated(-3, generateBombs);
-		console.log("GEN", generateBombs);
         playingField = gameLevel.getMap();
 	}
 	

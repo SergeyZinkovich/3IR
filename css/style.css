@@ -1,6 +1,5 @@
  @font-face { font-family: Brewsky; src: url('../fonts/Brewsky.ttf'); } 
 
-
 * {
     margin: 0;
     padding: 0;
@@ -22,31 +21,16 @@
     float: left;
     width: 64px;
     height: 64px;
-    /* background-color: #707070; */
 }
-
-/* .game-cell:hover {
-    background-color: #0000ff;
-} */
 
 .selected-cell {
     z-index: 0;
     background: url('../img/select.png');
-    /* background-color: blue; */
-}
-
-.selected-cell:hover {
-    /* background-color: blue; */
 }
 
 #game-grid img {
     position:absolute;
     z-index: 100;
-}
-
-.bombed {
-    /* background-color: black; */
-   /*  background: url('../img/boom.png'); */
 }
 
 .bombed img {
@@ -58,26 +42,15 @@
     left: 0;  
     right: 0;  
     margin: auto;
-
     transform: scale(6);
     transition: transform 0.5s;
     display: block;
    
 } 
 
-.destroyed {
-/*     background-color: black;
-    background: url('../img/boom.png'); */
-}
-
 .destroyed img {
-
-    /* display: none; */
     transform: scale(0.1);
     transition: transform 1s;
-    /* background-color: red; */
-/*     width: 32px;
-    height: 32px; */ */
 }
 
 h1 {
@@ -108,33 +81,24 @@ body {
 }
 
 #level-status {
-    /* position: absolute; */
     text-align: center;
     font-size: 48px;
     margin: 0 auto;
     font-family: Brewsky, sans-serif;
-    /* background-color: #0C0C0C; */
 }
-
-/* #level-status div {
-    display: inline-block;
-} */
 
 #gem-upgrade-box {
     font-size: 36px;
     margin: 20px auto 0;
     display: block;
     font-family: Brewsky, sans-serif;
-    /* height: 100px; */
     border: 4px double blue;
     background:  #ffcc99;
-    /* padding: 25px 0 0 0; */
     text-align: center;
 }
 
 .gem-status {
     display: inline-block;
-    /* width: 100px; */
     margin: 10px 5px 20px 5px;
 }
 
@@ -171,7 +135,6 @@ body {
 	background-color: #17005d;
 	width: 400px;
 	height: 300px;
- 	/* top:-400px; */
 	top: -208px;
 	left: 50%;
 	z-index: 2000;

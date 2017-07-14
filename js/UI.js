@@ -31,7 +31,6 @@ $(window).on("load", function(){
     };
 
     Game.prototype.helpTurn = function(){
-        console.log('help');
         var gT = engine.help();
         var cell1 =  this.gameGrid.find('#'+gT[0][0]+'-'+gT[0][1]);
         var cell2 =  this.gameGrid.find('#'+gT[1][0]+'-'+gT[1][1]);
@@ -39,15 +38,6 @@ $(window).on("load", function(){
     };
 
     Game.prototype.initialize = function(isNext){
-        console.log('-----INIT---------')
-        this.isSwap1InProgress = false;
-        this.isSwap2InProgress = false;
-        // this.isDestructionInProgress = false;
-        this.isUIBlocked = false;
-        this.isExectuted = false;
-
-        this.gameGrid = $('#game-grid');
-
         if (!this.level) {
             //nothing
         }
@@ -58,19 +48,22 @@ $(window).on("load", function(){
             engine.replayLevel();
         }
 
-        this.level = engine.getPlayingField();
+        this.isSwap1InProgress = false;
+        this.isSwap2InProgress = false;
+        this.isUIBlocked = false;
+        this.isExectuted = false;
 
+        this.gameGrid = $('#game-grid');
+        this.statusBox = $('#gem-upgrade-box');
+        this.timer = $("#progress");
+
+        this.level = engine.getPlayingField();
         this.GAME_GRID_WIDTH = engine.getColumns();
         this.GAME_GRID_HEIGHT = engine.getRows();
         this.gameState = GAME_PLAYING;
-        console.log(this.GAME_GRID_WIDTH);
-        console.log(this.GAME_GRID_HEIGHT);
         //create game grid
-        this.statusBox = $('#gem-upgrade-box');
         this.requiredScore = engine.getScoreTask();
-        this.timer = $("#progress");
         this.levelEndTime = new Date().getTime() + engine.getTimeTask() * 1000;
-        // this.levelEndTime = new Date().getTime() + DEBUG_TIME;
 
         $("#game").css({
             'width': CELL_SIZE * this.GAME_GRID_WIDTH + 'px',
@@ -78,13 +71,11 @@ $(window).on("load", function(){
         });
 
         $(this.timer).css('width', CELL_SIZE * this.GAME_GRID_WIDTH + 'px');
-
         $('#gem-upgrade-box').css('width', CELL_SIZE * this.GAME_GRID_WIDTH + 'px');
-        console.log('time: ' + (this.levelEndTime - new Date().getTime()));
+
         this.createTimer();
         this.updateStatusBox();
         this.updateScore();
-        //this.updateLevel(false);
         this.createGrid();
     };
 
@@ -95,7 +86,6 @@ $(window).on("load", function(){
 
     Game.prototype.createGrid = function(){
         var that = this;
-        console.log('draw');
         this.level = engine.getPlayingField(); 
         this.gameGrid.empty();
 
@@ -129,11 +119,9 @@ $(window).on("load", function(){
     Game.prototype.redrawGrid = function(){
         var that = this;
 
-        console.log('redraw');
         for (let i = 0; i < this.GAME_GRID_HEIGHT; ++i) {
             for (let j = 0; j < this.GAME_GRID_WIDTH; ++j) {
                 var id = i + '-' + j;
-                // this.gameGrid.find('#'+id+' img').attr('src', 'img/diamond-' + this.level[i][j] + '.png').removeClass('destroyed');
                 if (this.level[i][j] === '-1'){
                     this.gameGrid.find('#'+id).removeClass('destroyed').removeClass('bombed').find('img').attr('src', 'img/bomb.png')
                 }
@@ -144,7 +132,6 @@ $(window).on("load", function(){
         }
 
         that.updateStatusBox();
-        console.log('anim lock');
         var nexAnnihilate = engine.annihilate();
 
         that.isExectuted = false;
@@ -152,17 +139,14 @@ $(window).on("load", function(){
             'top': 0,
             'left': 0},
             FALL_TIME, function() {
-            //console.log('anim unlock');
             that.updateOnce(function() {that.updateLevel(nexAnnihilate);});
         });
     }
 
 
     Game.prototype.updateLevel = function(destroyed){
-        //console.log('updating level');
         this.updateScore();
         if (this.gameState === GAME_END) {
-            console.log('updateBlocked');
             return;
         }
         this.animateDestruction(destroyed);
@@ -175,7 +159,6 @@ $(window).on("load", function(){
 
     Game.prototype.userClick = function(cell){
         if (this.isAnimationInProgress() || this.gameState !== GAME_PLAYING) {
-            console.log('user click was blocked');
             return;
         }
 
@@ -188,10 +171,7 @@ $(window).on("load", function(){
     };
 
     Game.prototype.swapEndCallback = function(callback){
-        //console.log('one swap ended');
-
         if (!this.isSwap1InProgress && !this.isSwap2InProgress) {
-            //onsole.log('both swaps ended');
             callback();
         }
     };
@@ -231,11 +211,10 @@ $(window).on("load", function(){
     Game.prototype.swapCells = function(cell1, cell2) {
         var that = this;
 
-        // this.isUIBlocked = true;
         if (this.isUIBlocked) {
-            console.log('rofl');
             return;
         }
+
         this.isUIBlocked = true;
         that.isSwap1InProgress = true;
         that.isSwap2InProgress = true;
@@ -254,7 +233,6 @@ $(window).on("load", function(){
         var nextDestroy = engine.turn(id1[0], id1[1], id2[0], id2[1]);
 
         this.animateSwap(cell1, cell2, id1, id2, function() {
-			console.log('callback');
 			if (nextDestroy) {
 				that.updateLevel(nextDestroy);
             }
@@ -269,15 +247,12 @@ $(window).on("load", function(){
         var that = this;
         if (!gems) {
             this.isUIBlocked = false;
-            console.log("UNBLOCKING!!!!!!!!")
-            //this.isDestructionInProgress = false;
             if (engine.levelPassed() && that.gameState !== GAME_END) {
                 this.endGame();
             }
             return;
 		}
 		
-        // that.isDestructionInProgress = true;
         var isBomb = false;
         gems.forEach(function(gem, index, array) {
             if (gem[2] === '-1') {
@@ -302,10 +277,8 @@ $(window).on("load", function(){
     };
 
     Game.prototype.destroyGems = function() {
-        console.log('destroying');
-        
         var that = this;
-        //calculating hight
+        
         for (let j = 0; j < that.level[0].length; ++j) {
             let destCount = 0;
             for (var i = that.level.length - 1; i >= 0; --i) {
@@ -349,11 +322,9 @@ $(window).on("load", function(){
     
     Game.prototype.timeEnd = function(){
         if(this.gameState === GAME_END) {
-            console.log('tiemend retutn');
             return;
         }
         var that = this;
-        console.log('time end');
         that.gameState = GAME_TIMEOUT;
         that.endGame();
     };
@@ -366,7 +337,6 @@ $(window).on("load", function(){
         that.gameState = GAME_END;
         clearTimeout(that.boomTimeOut);
         that.timer.find('#bar').stop(true, false);
-        console.log('--------------end-------------');
         that.showMenu(engine.levelPassed());
     };
     
@@ -390,7 +360,6 @@ $(window).on("load", function(){
     };
 	
 	Game.prototype.hideMenu = function(){
-        console.log('hiding menu');
 		this.menu.animate({top:'-208px'}, 400);
 	};
 	
@@ -421,12 +390,10 @@ $(window).on("load", function(){
     };
 
     Music.prototype.playBomb = function(){
-        console.log('bomb.mp3');
         this.bomb.trigger('play');
     };
 
     Music.prototype.playPop = function(){
-        console.log('pop.mp3');
         this.pop.trigger('play');
     };
 
