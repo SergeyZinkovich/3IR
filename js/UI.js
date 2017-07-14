@@ -120,9 +120,8 @@ $(document).ready(function(){
             FALL_TIME, function() {
             console.log('anim unlock');
             that.isAnimationInProgress = false;
+			that.updateLevel(engine.annihilate());
         });
-
-        setTimeout(function(destroyed) {that.updateLevel(destroyed)}, FALL_TIME+50, engine.annihilate());
     }
 
 
@@ -132,16 +131,18 @@ $(document).ready(function(){
         this.updateScore();
         this.animateDestruction(destroyed);
 
+		console.log('animation is not in progress');
+		
+		if (engine.levelPassed()) {
+			console.log('ending');
+			this.endGame();
+		}
+		
+        //}
         // if(engine.levelPassed()) {
         //     this.gameState = GAME_END;
         // }
-        if (!this.isAnimationInProgress) {
-            console.log('animation is not in progress');
-            if (this.gameState !== GAME_PLAYING || engine.levelPassed()) {
-                console.log('ending');
-                this.endGame();
-            }
-        }
+        //if (!this.isAnimationInProgress) {
     };
 
     Game.prototype.userClick = function(cell){
@@ -159,7 +160,7 @@ $(document).ready(function(){
         }
     };
 
-    Game.prototype.animateSwap = function(cell1, cell2, id1, id2){
+    Game.prototype.animateSwap = function(cell1, cell2, id1, id2, callback){
         var that = this;
         this.isAnimationInProgress = true;
         var cell1Img = cell1.find('img');
@@ -185,6 +186,7 @@ $(document).ready(function(){
                 cell2Img.css({'top': 0, 'left': 0, 'z-index': 100}).attr('src', cell1ImgPath);
                 that.isAnimationInProgress = false;
                 console.log('swap ended');
+				callback();
         });
     };
 
@@ -194,21 +196,35 @@ $(document).ready(function(){
         var id2 = cell2.attr('id').split('-');
 
         if (!((Math.abs(id2[0]-id1[0]) === 1 && id2[1] === id1[1]) ||  (Math.abs(id2[1]-id1[1]) === 1 && id2[0] === id1[0]))) {
-
             cell2.addClass('selected-cell');
             return;
         }
 
-        this.animateSwap(cell1, cell2, id1, id2);
-        var nextDestroy = engine.turn(id1[0], id1[1], id2[0], id2[1],)
-
-        if(!nextDestroy) {
-            setTimeout(function(cell1, cell2, id1, id2) {that.animateSwap(cell1, cell2, id1, id2);}, SWAP_TIME+50, cell1, cell2, id1, id2);
-            setTimeout(function(nextDestr) {that.updateLevel(nextDestr);}, SWAP_TIME + 100, nextDestroy);
-        }
-        else {
-            setTimeout(function(nextDestr) {that.updateLevel(nextDestr);}, SWAP_TIME+50, nextDestroy);
-        }
+        this.animateSwap(cell1, cell2, id1, id2, function() {
+			var nextDestroy = engine.turn(id1[0], id1[1], id2[0], id2[1]);
+			console.log('callback');
+			if (!nextDestroy) {
+				that.animateSwap(cell1, cell2, id1, id2, function() {
+					that.updateLevel(nextDestroy);
+				});
+			}
+			else {
+				that.updateLevel(nextDestroy);
+			}
+		});
+        // var nextDestroy = engine.turn(id1[0], id1[1], id2[0], id2[1])
+		
+		// if(!nextDestroy) {
+			// that.animateSwap(cell1, cell2, id1, id2, that.updateLevel);
+		// }
+        // if(!nextDestroy) {
+			
+            // // setTimeout(function(cell1, cell2, id1, id2) {that.animateSwap(cell1, cell2, id1, id2);}, SWAP_TIME+50, cell1, cell2, id1, id2);
+            // // setTimeout(function(nextDestr) {that.updateLevel(nextDestr);}, SWAP_TIME + 100, nextDestroy);
+        // }
+        // else {
+            // setTimeout(function(nextDestr) {that.updateLevel(nextDestr);}, SWAP_TIME+50, nextDestroy);
+        // }
 
     };
 
@@ -333,7 +349,7 @@ $(document).ready(function(){
 	};
 	
     Game.prototype.updateScore = function(){
-        $('#score-box').text(engine.getScore() + '/' + this.requiredScore + ' Pts. lvl №'+engine.getLevelNumber());
+        $('#score-box').text(engine.getScore() + '/' + this.requiredScore + ' lvl №'+engine.getLevelNumber());
     };
 
     var game = new Game();
