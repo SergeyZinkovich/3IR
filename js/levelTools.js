@@ -100,7 +100,7 @@ var GameLevel = function(aelements, difficulty){
             }
         }
 		passTime = Math.floor(randomInteger(20, 100));
-		passScore = Math.round(passTime*(4*Math.max(Math.log(difficulty),1)));
+		passScore = Math.round(passTime*(12*Math.pow(Math.max(Math.log(difficulty),1), 1.7)));
 		setUpgradeConditions();
 		generateBombs();
     }
