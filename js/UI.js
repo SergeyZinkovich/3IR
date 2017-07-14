@@ -23,7 +23,19 @@ $(document).ready(function(){
     var Game = function () { 
         var that = this;
         this.menu = $('#menu');
+        this.helpBtn = $('#help');
+        this.helpBtn.click(function() {
+            that.helpTurn();
+        });
         this.initialize(false);
+    };
+
+    Game.prototype.helpTurn = function(){
+        console.log('help');
+        var gT = engine.help();
+        var cell1 =  this.gameGrid.find('#'+gT[0][0]+'-'+gT[0][1]);
+        var cell2 =  this.gameGrid.find('#'+gT[1][0]+'-'+gT[1][1]);
+        this.swapCells(cell1, cell2);
     };
 
     Game.prototype.initialize = function(isNext){
@@ -170,7 +182,6 @@ $(document).ready(function(){
         var prevSelCell = this.gameGrid.find(".selected-cell").first();
         cell.addClass('selected-cell');
         if (prevSelCell.length) {
-            this.isUIBlocked = true;
             this.gameGrid.children().removeClass('selected-cell');
             this.swapCells(prevSelCell, cell);
         }
@@ -221,6 +232,7 @@ $(document).ready(function(){
         var that = this;
 
         // this.isUIBlocked = true;
+        this.isUIBlocked = true;
         that.isSwap1InProgress = true;
         that.isSwap2InProgress = true;
 
