@@ -41,7 +41,7 @@ var GameLevel = function(aelements, difficulty){
 	function setUpgradeConditions(){
 		for (var i = 0; i < elements.length; ++i){
 			if (upgradeConditions[i] === undefined){
-				upgradeConditions[i] = Math.floor(randomInteger(1,3)+(2*Math.max(Math.log(difficulty),1))*passTime/100);
+				upgradeConditions[i] = Math.floor(randomInteger(0,2)+(4*Math.max(Math.log(difficulty),2))*passTime/150 + Math.log(difficulty)/5);
 			}
 		}		
 	}
@@ -82,8 +82,8 @@ var GameLevel = function(aelements, difficulty){
 
     function generateChances() {
         chances = new Array(elements.length);
-        chances[0] = 100 / (chances.length) + (numberOfLevels - difficulty) / 2;
-        chances[1] = 100 / (chances.length) + (numberOfLevels - difficulty) / 3;
+        chances[0] = 100 / (chances.length) + Math.max(0,(numberOfLevels - difficulty)) / 2;
+        chances[1] = 100 / (chances.length) + Math.max(0,(numberOfLevels - difficulty)) / 3;
         for (var i = 2; i < chances.length; ++i) {
             chances[i] = (100 - chances[0] - chances[1]) / (chances.length - 2);
         }
@@ -100,7 +100,7 @@ var GameLevel = function(aelements, difficulty){
             }
         }
 		passTime = Math.floor(randomInteger(20, 100));
-		passScore = Math.round(passTime*(12*Math.pow(Math.max(Math.log(difficulty),1), 1.7)));
+		passScore = Math.round(passTime*(4.5*Math.max(Math.log(difficulty),0.7)));
 		setUpgradeConditions();
 		generateBombs();
     }
