@@ -232,6 +232,10 @@ $(document).ready(function(){
         var that = this;
 
         // this.isUIBlocked = true;
+        if (this.isUIBlocked) {
+            console.log('rofl');
+            return;
+        }
         this.isUIBlocked = true;
         that.isSwap1InProgress = true;
         that.isSwap2InProgress = true;
