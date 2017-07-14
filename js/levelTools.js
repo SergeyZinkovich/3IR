@@ -111,6 +111,7 @@ var GameLevel = function(aelements, difficulty){
                 if (map[i][j] === elementForReplacing){
                     if (createBomb){
                         map[i][j] = bomb;
+						createBomb = 0;
                         continue;
                     }
                     map[i][j] = generateWithProbability(elements,chances);

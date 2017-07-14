@@ -102,7 +102,12 @@ var Engine = function (){
 			updateScore(ans);
 			updateCollectedGems(ans);
 			dropGems(ans);
-			doGen();
+			if (ans.length > 4){
+				doGen(true);
+			}
+			else{
+				doGen(false);
+			}
 			return ans;
 		}
 		else{
@@ -199,8 +204,9 @@ var Engine = function (){
 		}
 	}
 
-	function doGen(){
-		gameLevel.replaceWithGenerated(-3);
+	function doGen(generateBombs){
+		gameLevel.replaceWithGenerated(-3, generateBombs);
+		console.log("GEN", generateBombs);
         playingField = gameLevel.getMap();
 	}
 	
