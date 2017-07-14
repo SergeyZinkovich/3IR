@@ -105,14 +105,12 @@ var GameLevel = function(aelements, difficulty){
 		generateBombs();
     }
 
-    this.replaceWithGenerated = function(elementForReplacing){
-        var p = generateWithProbability([1,0],[20,80]);
+    this.replaceWithGenerated = function(elementForReplacing, createBomb){
         for (var i = 0; i < map.length; ++i){
             for (var j = 0; j < map[i].length; ++j){
                 if (map[i][j] === elementForReplacing){
-                    if (p === 1){
+                    if (createBomb){
                         map[i][j] = bomb;
-                        p = 0;
                         continue;
                     }
                     map[i][j] = generateWithProbability(elements,chances);

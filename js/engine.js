@@ -193,9 +193,7 @@ var Engine = function (){
 			let h = line[i][0];
 			let k = line[i][1];
 			while ((h > 0) && (playingField[h - 1][k] !== -3)){
-				buff = playingField[h - 1][k];
-				playingField[h - 1][k] = playingField[h][k];
-				playingField[h][k] = buff;
+				gameLevel.swapElements(h - 1,k,h,k);
 				h--;
 			}
 		}
