@@ -13,6 +13,7 @@
 	border: 4px double blue;
 	background:  #ffcc99;
     overflow: hidden;
+    user-select: none;
 }
 
 .game-cell {
