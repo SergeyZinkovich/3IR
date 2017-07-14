@@ -2,8 +2,8 @@
 
 $(document).ready(function(){
     console.log('UI loaded')
-    const WIN_TEXT = '<span>Level passed!</span> Continue?';
-    const LOOSE_TEXT = '<span>You lost!</span> Try again?';
+    const WIN_TEXT = '<span>Level passed!</span>';
+    const LOOSE_TEXT = '<span>You lost!</span>';
 
     const BTN_WIN_TEXT = 'Continue';
     const BTN_LOOSE_TEXT = 'Retry';
@@ -28,7 +28,6 @@ $(document).ready(function(){
 
     Game.prototype.initialize = function(isNext){
         console.log('-----INIT---------')
-        this.gameState= GAME_PLAYING;
 
         this.isAnimationInProgress = false;
         this.gameGrid = $('#game-grid');
@@ -48,6 +47,7 @@ $(document).ready(function(){
 
         this.GAME_GRID_WIDTH = engine.getColumns();
         this.GAME_GRID_HEIGHT = engine.getRows();
+        this.gameState = GAME_PLAYING;
         console.log(this.GAME_GRID_WIDTH);
         console.log(this.GAME_GRID_HEIGHT);
         //create game grid
@@ -66,6 +66,7 @@ $(document).ready(function(){
 
         this.createTimer();
         this.updateStatusBox();
+        this.updateScore();
         this.updateLevel(false);
         this.createGrid();
     };
@@ -120,29 +121,26 @@ $(document).ready(function(){
             FALL_TIME, function() {
             console.log('anim unlock');
             that.isAnimationInProgress = false;
-			that.updateLevel(engine.annihilate());
+            that.updateStatusBox();
+            that.updateLevel(engine.annihilate());
         });
     }
 
 
     Game.prototype.updateLevel = function(destroyed){
         console.log('updating level');
-        this.updateStatusBox();
         this.updateScore();
+        this.updateStatusBox();
+        if (this.gameState === GAME_END) {
+            console.log('updateBlocked');
+            return;
+        }
         this.animateDestruction(destroyed);
-
-		console.log('animation is not in progress');
-		
-		if (engine.levelPassed()) {
-			console.log('ending');
-			this.endGame();
-		}
-		
-        //}
-        // if(engine.levelPassed()) {
-        //     this.gameState = GAME_END;
-        // }
-        //if (!this.isAnimationInProgress) {
+        
+        if(engine.levelPassed()) {
+             this.endGame();
+             return;
+        }
     };
 
     Game.prototype.userClick = function(cell){
@@ -212,25 +210,16 @@ $(document).ready(function(){
 				that.updateLevel(nextDestroy);
 			}
 		});
-        // var nextDestroy = engine.turn(id1[0], id1[1], id2[0], id2[1])
-		
-		// if(!nextDestroy) {
-			// that.animateSwap(cell1, cell2, id1, id2, that.updateLevel);
-		// }
-        // if(!nextDestroy) {
-			
-            // // setTimeout(function(cell1, cell2, id1, id2) {that.animateSwap(cell1, cell2, id1, id2);}, SWAP_TIME+50, cell1, cell2, id1, id2);
-            // // setTimeout(function(nextDestr) {that.updateLevel(nextDestr);}, SWAP_TIME + 100, nextDestroy);
-        // }
-        // else {
-            // setTimeout(function(nextDestr) {that.updateLevel(nextDestr);}, SWAP_TIME+50, nextDestroy);
-        // }
 
     };
 
     Game.prototype.animateDestruction = function(gems){
         var that = this;
-        if(!gems) {
+        if (!gems) {
+            if (engine.levelPassed() && that.gameState !== GAME_END) {
+                console.log('ending');
+                this.endGame();
+            }
             return;
 		}
 		
@@ -310,12 +299,15 @@ $(document).ready(function(){
         clearInterval(this.timerInterval);
         console.log('time end');
         that.gameState = GAME_TIMEOUT;
-        that.updateLevel();
+        that.endGame();
     };
 
     Game.prototype.endGame = function(){
+        if (this.gameState === GAME_END) {
+            return;
+        }
         var that = this;
-        that.gameState = GAME_END;
+        this.gameState = GAME_END;
         clearInterval(this.timerInterval);
         console.log('--------------end-------------');
         that.showMenu(engine.levelPassed());
@@ -323,10 +315,6 @@ $(document).ready(function(){
     
     Game.prototype.showMenu = function(isWin){
         var that = this;
-        // this.menu.one('click', function() {
-        //     that.hideMenu();
-        //     that.initialize(true);
-        // });
         var resultText = isWin ? WIN_TEXT : LOOSE_TEXT;
         var btnText = isWin ? BTN_WIN_TEXT : BTN_LOOSE_TEXT; 
 
@@ -345,6 +333,7 @@ $(document).ready(function(){
     };
 	
 	Game.prototype.hideMenu = function(){
+        console.log('hiding menu');
 		this.menu.animate({top:'-208px'}, 400);
 	};
 	

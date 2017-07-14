@@ -15,14 +15,6 @@
     overflow: hidden;
 }
 
-/* #game-grid {
-    display: block;
-    margin: 0 auto;
-	border: 4px double blue;
-	background:  #ffcc99;
-    overflow: hidden;
-} */
-
 .game-cell {
     display: block;
     position:  relative;
@@ -53,15 +45,17 @@
 }
 
 .destroyed {
-    background-color: black;
-    background: url('../img/boom.png');
+/*     background-color: black;
+    background: url('../img/boom.png'); */
 }
 
 .destroyed img{
-    display: none;
+    /* display: none; */
+    transform: scale(0.1);
+    transition: transform 1s;
     /* background-color: red; */
-    width: 32px;
-    height: 32px; */
+/*     width: 32px;
+    height: 32px; */ */
 }
 
 h1 {
