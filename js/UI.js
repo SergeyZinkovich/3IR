@@ -370,20 +370,22 @@ $(window).on("load", function(){
 
 
     var Music = function() {
+		var that = this;
         this.bg = $('#music');
         this.pop = $("#pop");
         this.bomb = $("#bomb");
 
-        this.bg.prop('volume', 0.05);
-        this.pop.prop('volume',0.5);
-        this.bomb.prop('volume', 0.5);
-        
+        this.bg.prop('volume', 0.1);
+        this.pop.prop('volume',0.7);
+        this.bomb.prop('volume', 0.7);
+        that.bg.trigger('play');
+		
         $('#play-music').click(function() {
-            if(bg.prop("paused")) {
-                bg.trigger('play');
+            if(that.bg.prop("paused")) {
+                that.bg.trigger('play');
             }
             else {
-                bg.trigger("pause");
+                that.bg.trigger("pause");
             }
         });
 
